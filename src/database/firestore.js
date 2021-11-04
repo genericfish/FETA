@@ -4,20 +4,28 @@ const { join } = require('path')
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app')
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore')
 
-// Initialize Firebase
+class Database {
+    static gInitialized = false
+    static gDatabase = null
 
-const serviceAccount = require(join(__dirname, '../private.json'))
+    constructor() {
+        if (!Database.gInitialized) {
+            const serviceAccount = require(join(__basedir, '../private.json'))
 
-initializeApp({
-    credential: cert(serviceAccount)
-})
+            initializeApp({
+                credential: cert(serviceAccount)
+            })
 
-const db = getFirestore()
+            Database.gDatabase = getFirestore()
+            Database.gInitialized = true
+        }
+    }
 
-async function getUsers(db) {
-    const snapshot = await db.collection("users").get();
-
-    snapshot.forEach(doc => console.log(doc.id, '=>', doc.data()))
+    async getUsers() {
+        const snapshot = await Database.gDatabase.collection("users").get();
+    
+        snapshot.forEach(doc => console.log(doc.id, '=>', doc.data()))
+    }
 }
 
-getUsers(db)
+exports.Database = Database
