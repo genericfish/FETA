@@ -1,0 +1,23 @@
+{
+  "name": "feta",
+  "version": "0.0.0",
+  "description": "Financial Excellence Tracking Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.tamu.edu/TheSQL/FETA.git"
+  },
+  "keywords": [
+    "finance"
+  ],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "express": "^4.17.1",
+    "firebase": "^9.2.0",
+    "firebase-admin": "^10.0.0"
+  }
+}
