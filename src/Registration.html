@@ -1,47 +1,31 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+
+
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>FETA</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" type="text/css" href="main.css">
-  </head>
-
+<head>
+<link rel="stylesheet" href="main.css">
+<title> FETA </title>
+</head>
+<body>
   <body>
-    <header class="container">
-      <div class="row">
-        <h1 class="col-sm-4">Registration</h1>
-        <nav class="col-sm-8 text-right">
-          <a class="btn btn-primary" href="Landing.html" role="button">Landing</a>
-          <a class="btn btn-primary" href="LogIn.html" role="button">Log In</a>
-        </nav>
+    <div class="login-page">
+      <h1>FETA</h1>
+      <div class="form">
+        <div class="login">
+          <div class="login-header">
+            <h3>Registration</h3>
+            <p>Please Create Login Credentials.</p>
+          </div>
+        </div>
+        <form class="login-form">
+          <input type="email" placeholder="email"/>
+          <input type="password" placeholder="password"/>
+          <input type="confirmpass" placeholder="confirm password"/>
+          <button>register</button>
+        </form>
       </div>
-    </header>
-
-    <section class="container">
-      <!-- <button onclick="change()">Dark/Light Mode</button> --> 
-      <script type="text/javascript" src="toggle.js"></script>
-      <!-- Rectangular switch -->
-      <label class="switch"> 
-        <input type="checkbox" onclick="change()"> 
-        <span class="slider round"></span>
-      </label>
-      <h6>Dark Mode</h6>
-    </section>
-
-    <section class = "container"> 
-        <form>  
-            User Name:  
-            <input type="text" name="Name" size="20">  
-            <br> <br>  
-            Password:  
-            <input type="text" name="Password" size="15"> 
-            <br> <br>  
-            Email:  
-            <input type="text" name="Email" size="30">   
-        </form> 
-        <a class="btn btn-primary" href="Login.html" role="button">Register</a>
-    </section>
-  </body>
+    </div>
+</body>
+</body>
 </html>
