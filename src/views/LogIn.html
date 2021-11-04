@@ -1,46 +1,28 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html>
 <html>
-
 <head>
-  <title>FETA</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-  <link rel="stylesheet" type="text/css" href="main.css">
+<link rel="stylesheet" href="main.css">
+<title> CSS Login Screen Tutorial </title>
 </head>
-
 <body>
-  <header class="container">
-    <div class="row">
-      <h1 class="col-sm-4">Log In</h1>
-      <nav class="col-sm-8 text-right">
-        <a class="btn btn-primary" href="Landing.html" role="button">Landing</a>
-        <a class="btn btn-primary" href="Registration.html" role="button">Register</a>
-      </nav>
+  <body>
+    <div class="login-page">
+      <h1>FETA</h1>
+      <div class="form">
+        <div class="login">
+          <div class="login-header">
+            <h3>LOGIN</h3>
+            <p>Please enter your credentials to login.</p>
+          </div>
+        </div>
+        <form class="login-form">
+          <input type="text" placeholder="email"/>
+          <input type="password" placeholder="password"/>
+          <button>login</button>
+          <p class="message">Not registered? <a href="Registration.html">Create an account</a></p>
+        </form>
+      </div>
     </div>
-  </header>
-
-  <section class="container">
-    <!-- <button onclick="change()">Dark/Light Mode</button> -->
-    <!-- Rectangular switch -->
-    <label class="switch">
-      <input id="toggle" type="checkbox" onclick="change()">
-      <span class="slider round"></span>
-    </label>
-    <h6>Dark Mode</h6>
-  </section>
-
-  <section class="container">
-    <form>
-      Email:
-      <input type="text" name="Email" size="20">
-      <br> <br>
-      Password:
-      <input type="text" name="Password" size="15">
-    </form>
-    <a class="btn btn-primary" href="Dashboard.html" role="button">Log In</a>
-  </section>
-  <script type="text/javascript" src="toggle.js"></script>
 </body>
-
+</body>
 </html>
