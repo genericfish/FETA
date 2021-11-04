@@ -1,11 +1,12 @@
 "use strict"
 
+const { join } = require('path')
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app')
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore')
 
 // Initialize Firebase
 
-const serviceAccount = require('../private.json')
+const serviceAccount = require(join(__dirname, '../private.json'))
 
 initializeApp({
     credential: cert(serviceAccount)
