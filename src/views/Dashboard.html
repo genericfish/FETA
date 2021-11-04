@@ -1,34 +1,36 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-  <head>
-    <title>FETA</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" type="text/css" href="main.css">
-  </head>
 
-  <body>
-    <header class="container">
-      <div class="row">
-        <h1 class="col-sm-4">Dashboard</h1>
-        <nav class="col-sm-8 text-right">
-          <a class="btn btn-primary" href="Transaction.html" role="button">Transaction</a>
-          <a class="btn btn-primary" href="Statistics.html" role="button">Statistics</a>
-          <a class="btn btn-primary" href="Login.html" role="button">Log Out</a>
-        </nav>
-      </div>
-    </header>
+<head>
+  <title>FETA</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" type="text/css" href="main.css">
+</head>
 
-    <section class="container">
-      <!-- <button onclick="change()">Dark/Light Mode</button> --> 
-      <script type="text/javascript" src="toggle.js"></script>
-      <!-- Rectangular switch -->
-      <label class="switch"> 
-        <input type="checkbox" onclick="change()"> 
-        <span class="slider round"></span>
-      </label>
-      <h6>Dark Mode</h6>
-    </section>
-  </body>
+<body>
+  <header class="container">
+    <div class="row">
+      <h1 class="col-sm-4">Dashboard</h1>
+      <nav class="col-sm-8 text-right">
+        <a class="btn btn-primary" href="Transaction.html" role="button">Transaction</a>
+        <a class="btn btn-primary" href="Statistics.html" role="button">Statistics</a>
+        <a class="btn btn-primary" href="Login.html" role="button">Log Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="container">
+    <!-- <button onclick="change()">Dark/Light Mode</button> -->
+    <!-- Rectangular switch -->
+    <label class="switch">
+      <input id="toggle" type="checkbox" onclick="change()">
+      <span class="slider round"></span>
+    </label>
+    <h6>Dark Mode</h6>
+  </section>
+  <script type="text/javascript" src="toggle.js"></script>
+</body>
+
 </html>
