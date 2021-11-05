@@ -37,6 +37,35 @@ class Database {
 
 }
 
+class User {
+    constructor(email){
+        this.reference = Database.gDatabase.collection("users").doc(email)
+        this.transactions =  this.reference.collection("transactions")
+        this.income = this.transactions.doc("income")
+        this.expenses = this.transactions.doc("expenses")
+        this.goals = this.transactions.doc("goals")
+        this.nmt = this.transactions.doc("nmt")
+    }
+
+    async addIncome(category, _date, _amount, _note){
+        const transaction = {
+            date: _date,
+            amount: _amount,
+            note: _note
+        }
+        await this.income.collection(category).doc().set(transaction)
+    }
+
+    async addExpense(category, _date, _amount, _note){
+        const transaction = {
+            date: _date,
+            amount: _amount,
+            note: _note
+        }
+        await this.expenses.collection(category).doc().set(transaction)
+    }
+}
 
 
 exports.Database = Database
+exports.User = User
