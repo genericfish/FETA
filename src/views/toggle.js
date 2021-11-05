@@ -5,7 +5,6 @@ function change() {
     }else{
         localStorage.setItem('darkMode', 'disabled'); //store this data if dark mode is off
     }
-
 };
 
 if(localStorage.getItem('darkMode') == 'enabled'){
