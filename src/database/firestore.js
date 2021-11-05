@@ -26,6 +26,17 @@ class Database {
     
         snapshot.forEach(doc => console.log(doc.id, '=>', doc.data()))
     }
+
+    async addUser(newEmail, newPassword) {
+        const data = {
+            password: newPassword
+        }
+
+        const result = await Database.gDatabase.collection("users").doc(newEmail).set(data)
+    }
+
 }
+
+
 
 exports.Database = Database
