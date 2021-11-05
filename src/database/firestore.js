@@ -10,7 +10,7 @@ class Database {
 
     constructor() {
         if (!Database.gInitialized) {
-            const serviceAccount = require(join(__basedir, '../private.json'))
+            const serviceAccount = require(join(__basedir, '../../private.json'))
 
             initializeApp({
                 credential: cert(serviceAccount)
