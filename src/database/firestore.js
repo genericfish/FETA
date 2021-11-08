@@ -35,6 +35,18 @@ class Database {
         const result = await Database.gDatabase.collection("users").doc(newEmail).set(data)
     }
 
+    async userExists(email){
+        return await Database.gDatabase.collection("users").doc(email).get().exists
+    }
+
+    async verifyCredentials(_email, _password){
+        let user = await Database.gDatabase.collection("users").doc(_email).get()
+        if(user.exists){
+            return user.data().password == _password
+        }
+        return false
+    }
+
 }
 
 class User {
