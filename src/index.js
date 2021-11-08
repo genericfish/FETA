@@ -9,7 +9,7 @@ const { Database, User } = require(path.join(__basedir, "database", "firestore.j
 
 const db = new Database()
 const app = express()
-const port = 8000
+const port = process.env.PORT || 8000
 
 const compileView = view => pug.compileFile(path.join(__basedir, "/views/", view))
 
