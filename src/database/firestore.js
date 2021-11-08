@@ -21,24 +21,27 @@ class Database {
         }
     }
 
+    // Returns references to all users in the database
     async getUsers() {
         const snapshot = await Database.gDatabase.collection("users").get();
-    
-        snapshot.forEach(doc => console.log(doc.id, '=>', doc.data()))
+        return snapshot
     }
 
+    // Adds user document with given email and password. Password overwritten if user exists
     async addUser(newEmail, newPassword) {
         const data = {
             password: newPassword
         }
 
-        const result = await Database.gDatabase.collection("users").doc(newEmail).set(data)
+        await Database.gDatabase.collection("users").doc(newEmail).set(data)
     }
 
+    // Returns true if the user document with the given email exists, otherwise false
     async userExists(email){
         return await Database.gDatabase.collection("users").doc(email).get().exists
     }
 
+    // Returns true if the password for a given user email is accurate
     async verifyCredentials(_email, _password){
         let user = await Database.gDatabase.collection("users").doc(_email).get()
         if(user.exists){
@@ -59,6 +62,7 @@ class User {
         this.nmt = this.transactions.doc("nmt")
     }
 
+    // Adds a transaction document to income. Provided date should be a JS Date
     async addIncome(category, _date, _amount, _note){
         const transaction = {
             date: _date,
@@ -68,6 +72,7 @@ class User {
         await this.income.collection(category).doc().set(transaction)
     }
 
+    // Adds a transaction document to expenses. Provided date should be a JS Date
     async addExpense(category, _date, _amount, _note){
         const transaction = {
             date: _date,
@@ -77,30 +82,37 @@ class User {
         await this.expenses.collection(category).doc().set(transaction)
     }
 
+    // Modifies income transaction in a given category and gives it new data
     async modifyIncome(category, transactionID, newData){
         await this.income.collection(category).doc(transactionID).set(newData)
     }
 
+    // Modifies expense transaction in a given category and gives it new data
     async modifyExpense(category, transactionID, newData){
         await this.expenses.collection(category).doc(transactionID).set(newData)
     }
 
+    // Removes income transaction in a given category
     async removeIncome(category, transactionID){
         await this.income.collection(category).doc(transactionID).delete()
     }
 
+    // Removes expense transaction in a given category
     async removeExpense(category, transactionID){
         await this.expenses.collection(category).doc(transactionID).delete()
     }
 
+    // Returns an array with references to all categories under income
     async getIncomeCategories(){
         return await this.income.listCollections();
     }
 
+    // Returns an array with references to all categories under expenses
     async getExpensesCategories(){
         return await this.expenses.listCollections();
     }
 
+    // Returns a set with references to all categories under income and expenses
     async getMonetaryCategories(){
         const incomeCollections = await this.getIncomeCategories()
         const expensesCollections = await this.getExpensesCategories()
@@ -110,6 +122,7 @@ class User {
         return result
     }
 
+    // Returns an array of income transactions within a category and date range. Dates should be JS Dates
     async getIncomeTransactions(category, dateMin, dateMax){
         const cat = this.income.collection(category)
         const transasction = await cat.where("date", "<=", dateMax).where("date", ">=", dateMin).get()
@@ -118,7 +131,7 @@ class User {
         return result
     }
 
-
+    // Returns an array of expense transactions within a category and date range. Dates should be JS Dates
     async getExpensesTransactions(category, dateMin, dateMax){
         const cat = this.expenses.collection(category)
         const transasction = await cat.where("date", "<=", dateMax).where("date", ">=", dateMin).get()
