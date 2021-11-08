@@ -10,7 +10,7 @@ class Database {
 
     constructor() {
         if (!Database.gInitialized) {
-            const serviceAccount = require(join(__basedir, '../../private.json'))
+            const serviceAccount = require(join(__basedir, '../private.json'))
 
             initializeApp({
                 credential: cert(serviceAccount)
@@ -63,6 +63,68 @@ class User {
             note: _note
         }
         await this.expenses.collection(category).doc().set(transaction)
+    }
+
+    async modifyIncome(category, transactionID, newData){
+        await this.income.collection(category).doc(transactionID).set(newData)
+    }
+
+    async modifyExpense(category, transactionID, newData){
+        await this.expenses.collection(category).doc(transactionID).set(newData)
+    }
+
+    async removeIncome(category, transactionID){
+        await this.income.collection(category).doc(transactionID).delete()
+    }
+
+    async removeExpense(category, transactionID){
+        await this.expenses.collection(category).doc(transactionID).delete()
+    }
+
+    async getIncomeCategories(){
+        const collections = await this.income.listCollections();
+        collections.forEach(collection => {
+            console.log('Found subcollection with id:', collection.id);
+        });
+        return collections
+    }
+
+    async getExpensesCategories(){
+        const collections = await this.income.listCollections();
+        collections.forEach(collection => {
+            console.log('Found subcollection with id:', collection.id);
+        });
+        return collections
+    }
+
+    async getMonetaryCategories(){
+        const incomeCollections = this.getIncomeCategories()
+        const expensesCollections = this.getExpensesCategories()
+        var result = new Set()
+        incomeCollections.forEach(collection => {result.add(collection)})
+        expensesCollections.forEach(collection => {result.add(collection)})
+        return result
+    }
+
+    async getIncomeTransactions(category, dateMin, dateMax){
+        const collections = this.getIncomeCategories()
+        var result = new Array()
+        collections.forEach(category => {
+            const transasction = await category.where("date", "<", dateMax).where("date", ">", dateMin).get()
+            transasction.forEach(trans => {result.push(trans)})
+        })
+        return result
+    }
+
+
+    async getExpensesTransactions(category, dateMin, dateMax){
+        const collections = this.getExpensesCategories()
+        var result = new Array()
+        collections.forEach(category => {
+            const transasction = await category.where("date", "<", dateMax).where("date", ">", dateMin).get()
+            transasction.forEach(trans => {result.push(trans)})
+        })
+        return result
     }
 }
 
