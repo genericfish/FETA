@@ -2,5 +2,6 @@
 
 global.__basedir = __dirname
 
-const { Database, User } = require("/database/firestore.js")
+const { join } = require("path")
+const { Database, User } = require(join(__basedir, "database", "firestore.js"))
 const db = new Database()
