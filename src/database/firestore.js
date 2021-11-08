@@ -90,8 +90,8 @@ class User {
     }
 
     async getMonetaryCategories(){
-        const incomeCollections = this.getIncomeCategories()
-        const expensesCollections = this.getExpensesCategories()
+        const incomeCollections = await this.getIncomeCategories()
+        const expensesCollections = await this.getExpensesCategories()
         let result = new Set()
         incomeCollections.forEach(collection => {result.add(collection)})
         expensesCollections.forEach(collection => {result.add(collection)})
@@ -99,23 +99,19 @@ class User {
     }
 
     async getIncomeTransactions(category, dateMin, dateMax){
-        const collections = this.getIncomeCategories()
+        const cat = this.income.collection(category)
+        const transasction = await cat.where("date", "<=", dateMax).where("date", ">=", dateMin).get()
         let result = new Array()
-        collections.forEach(async category => {
-            const transasction = await category.where("date", "<", dateMax).where("date", ">", dateMin).get()
-            transasction.forEach(trans => {result.push(trans)})
-        })
+        transasction.forEach(trans => {result.push(trans)})
         return result
     }
 
 
     async getExpensesTransactions(category, dateMin, dateMax){
-        const collections = this.getExpensesCategories()
+        const cat = this.expenses.collection(category)
+        const transasction = await cat.where("date", "<=", dateMax).where("date", ">=", dateMin).get()
         let result = new Array()
-        collections.forEach(async category => {
-            const transasction = await category.where("date", "<", dateMax).where("date", ">", dateMin).get()
-            transasction.forEach(trans => {result.push(trans)})
-        })
+        transasction.forEach(trans => {result.push(trans)})
         return result
     }
 }
