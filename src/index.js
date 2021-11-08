@@ -37,6 +37,11 @@ app.get("/login", (req, res) => res.send(compiledViews.Login({
 app.get("/registration", (req, res) => res.send(compiledViews.Registration({
     header: "Registration"
 })))
+
+app.post("/registration", function (req,res) {
+    return db.verifyCredentials(req.body.username, req.body.password); 
+})
+
 app.get("/statistics", (req, res) => res.send(compiledViews.Statistics({
     header: "Statistics"
 })))
