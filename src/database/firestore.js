@@ -82,25 +82,17 @@ class User {
     }
 
     async getIncomeCategories(){
-        const collections = await this.income.listCollections();
-        collections.forEach(collection => {
-            console.log('Found subcollection with id:', collection.id);
-        });
-        return collections
+        return await this.income.listCollections();
     }
 
     async getExpensesCategories(){
-        const collections = await this.income.listCollections();
-        collections.forEach(collection => {
-            console.log('Found subcollection with id:', collection.id);
-        });
-        return collections
+        return await this.expenses.listCollections();
     }
 
     async getMonetaryCategories(){
         const incomeCollections = this.getIncomeCategories()
         const expensesCollections = this.getExpensesCategories()
-        var result = new Set()
+        let result = new Set()
         incomeCollections.forEach(collection => {result.add(collection)})
         expensesCollections.forEach(collection => {result.add(collection)})
         return result
@@ -108,8 +100,8 @@ class User {
 
     async getIncomeTransactions(category, dateMin, dateMax){
         const collections = this.getIncomeCategories()
-        var result = new Array()
-        collections.forEach(category => {
+        let result = new Array()
+        collections.forEach(async category => {
             const transasction = await category.where("date", "<", dateMax).where("date", ">", dateMin).get()
             transasction.forEach(trans => {result.push(trans)})
         })
@@ -119,8 +111,8 @@ class User {
 
     async getExpensesTransactions(category, dateMin, dateMax){
         const collections = this.getExpensesCategories()
-        var result = new Array()
-        collections.forEach(category => {
+        let result = new Array()
+        collections.forEach(async category => {
             const transasction = await category.where("date", "<", dateMax).where("date", ">", dateMin).get()
             transasction.forEach(trans => {result.push(trans)})
         })
