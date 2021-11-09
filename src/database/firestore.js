@@ -61,6 +61,8 @@ class User {
         this.income = this.transactions.doc("income")
         this.expenses = this.transactions.doc("expenses")
         this.goals = this.transactions.doc("goals")
+        this.savings = this.goals.collection("savings")
+        this.amortizations = this.goals.collection("amortizations")
         this.nmt = this.transactions.doc("nmt")
     }
 
@@ -145,6 +147,108 @@ class User {
 
         return transactions.docs
     }
+
+    // Adds a savings goal document to expenses. Date should be a JS Date
+    async addSavingsGoal(name, amount, date, note){
+        const goal = {
+            amount: amount,
+            date: date,
+            note: note
+        }
+
+        return await this.savings.doc(name).set(goal)
+    }
+
+    // Adds a savings goal document to expenses. Date should be a JS Date
+    async addAmortizationsGoal(name, amount, date, note){
+        const goal = {
+            amount: amount,
+            date: date,
+            note: note
+        }
+
+        return await this.savings.doc(name).set(goal)
+    }
+
+    // Modifies goal in a given category and gives it new data
+    async modifyGoal(category, name, newData) {
+        if(category == "savings"){
+            return await this.savings.doc(name).set(newData)
+        }
+        else if(category == "amortizations"){
+            return await this.savings.doc(name).set(newData)
+        }
+    }
+
+    // Recursively deletes the specified document reference
+    async deleteDocument(docRef){
+        let subcollections = await docRef.listCollections()
+        for (let i = 0; i < subcollections.length; i++){
+            process.nextTick(() => {
+                deleteCollection(subcollections[i])
+            })
+        }
+        docRef.delete()
+    }
+
+    // Recursively deletes the specified collection reference
+    async deleteCollection(collRef){
+        let documents = await collRef.get().docs
+        for (let i = 0; i < documents.length; i++){
+            this.deleteDocument(documents[i])
+        }
+    }
+
+    // Removes goal in a given category and gives it new data
+    async removeGoal(category, name) {
+        if(category == "savings"){
+            this.deleteDocument(this.savings.doc(name))
+        }
+        else if(category == "amortizations"){
+            this.deleteDocument(this.amortizations.doc(name))
+        }
+    }
+
+    // Add a savings transaction which contributes to a goal. Date should be a JS Date
+    async addSavingsTransaction(goal, date, amount, note){
+        const data = {
+            date: date,
+            amount: amount,
+            note: note
+        }
+        this.savings.doc(goal).collection("changes").doc().set(data)
+    }
+
+    // Add an amortizations transaction which contributes to a goal. Date should be a JS Date
+    async addAmortizationsTransaction(goal, date, amount, note){
+        const data = {
+            date: date,
+            amount: amount,
+            note: note
+        }
+        this.amortizations.doc(goal).collection("changes").doc().set(data)
+    }
+
+    // Modifies a savings transaction which contributes to a goal.
+    async modifySavingsTransaction(goal, transactionID, newData){
+        this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData)
+    }
+
+    // Modifies an amortizations transaction which contributes to a goal.
+    async modifyAmortizationsTransaction(goal, transactionID, newData){
+        this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData)
+    }
+
+    // Removes a savings transaction which contributes to a goal
+    async removeSavingsTransaction(goal, transactionID){
+        this.savings.doc(goal).collection("changes").doc(transactionID).delete()
+    }
+
+    // Removes an amortizations transaction which contributes to a goal
+    async removeAmortizationsTransaction(goal, transactionID){
+        this.amortizations.doc(goal).collection("changes").doc(transactionID).delete()
+    }
+
 }
 
 module.exports = {
