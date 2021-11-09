@@ -9,9 +9,9 @@ block content
                 .login-header
                     h3="LOGIN"
                     p="Please enter your credentials to login."
-            form(class="login-form")
-                input(type="email" placeholder="example@feta.cheese")
-                input(type="password" placeholder="password")
+            form(class="login-form" action="/login" method="post")
+                input(type="email" name="email" placeholder="example@feta.cheese")
+                input(type="password" name="password" placeholder="password")
                 input(type="submit" value="Login")
                 p(class="message")="Not registered? "
                     a(href="/registration")="Create an account!"
