@@ -7,7 +7,6 @@ const express = require("express")
 const pug = require("pug")
 const { Database, User } = require(path.join(__basedir, "database", "firestore.js"))
 
-const db = new Database()
 const app = express()
 const port = process.env.PORT || 8000
 
