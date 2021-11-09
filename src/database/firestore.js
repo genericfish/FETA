@@ -9,13 +9,14 @@ class Database {
 
     static {
         if (Database.gDatabase == null) {
-            const serviceAccount = require(path.join(__basedir, "../private.json"))
             let firestoreSettings = {}
 
-            if (process.env.GOOGLE_APPLICATION_CREDENTIALS !== undefined)
+            if (process.env.GOOGLE_APPLICATION_CREDENTIALS !== undefined) {
                 firestoreSettings.credential = applicationDefault()
-            else
+            } else {
+                const serviceAccount = require(path.join(__basedir, "../private.json"))
                 firestoreSettings.credential = cert(serviceAccount)
+            }
 
             initializeApp(firestoreSettings)
 
