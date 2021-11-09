@@ -1,30 +1,17 @@
 extends templates/header.pug
 
 block content
-  <div class="login-page">
-    <h1>FETA</h1>
-    <section class="container">
-      <!-- <button onclick="change()">Dark/Light Mode</button> -->
-      <!-- Rectangular switch -->
-      <label class="switch">
-        <input id="toggle" type="checkbox" onclick="change()">
-        <span class="slider round"></span>
-      </label>
-      <h6>Dark Mode</h6>
-    </section>
-    <div class="form">
-      <div class="login">
-        <div class="login-header">
-          <h3>LOGIN</h3>
-          <p>Please enter your credentials to login.</p>
-        </div>
-      </div>
-      <form class="login-form">
-        <input type="text" placeholder="email"/>
-        <input type="password" placeholder="password"/>
-        <button>login</button>
-        <p class="message">Not registered? <a href="registration">Create an account</a></p>
-      </form>
-    </div>
-  </div>
-  <script type="text/javascript" src="/scripts/toggle.js"></script>
+    .login-page
+        h1="FETA"
+        include templates/toggle.pug
+        .form
+            .login
+                .login-header
+                    h3="LOGIN"
+                    p="Please enter your credentials to login."
+            form(class="login-form")
+                input(type="email" placeholder="example@feta.cheese")
+                input(type="password" placeholder="password")
+                input(type="submit" value="Login")
+                p(class="message")="Not registered? "
+                    a(href="/registration")="Create an account!"
