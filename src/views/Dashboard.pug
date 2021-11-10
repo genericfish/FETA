@@ -2,13 +2,4 @@ extends templates/header.pug
 
 block content
   include templates/nav.pug
-  <section class="container">
-    <!-- <button onclick="change()">Dark/Light Mode</button> --> 
-    <script type="text/javascript" src="/scripts/toggle.js"></script>
-    <!-- Rectangular switch -->
-    <label class="switch"> 
-      <input type="checkbox" onclick="change()"> 
-      <span class="slider round"></span>
-    </label>
-    <h6>Dark Mode</h6>
-  </section>
+  include templates/toggle.pug

@@ -128,11 +128,22 @@ input:checked + .slider:before {
 header .header{
   background-color: #fff;
   height: 45px;
+  width: 300px;
 }
 header a img{
   width: 134px;
-margin-top: 4px;
+  margin-top: 4px;
 }
+.landing-page {
+  width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+.landing-header {
+  width: 500px;
+  margin: 0 auto;
+}
+
 .login-page {
   width: 360px;
   padding: 8% 0 0;

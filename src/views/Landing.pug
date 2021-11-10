@@ -1,23 +1,13 @@
 extends templates/header.pug
 
 block content
-  <header class="container">
-    <div class="row">
-      <h1 class="col-sm-4">FETA</h1>
-      <nav class="col-sm-8 text-right">
-        <a class="btn btn-primary" href="login" role="button">Sign In</a>
-        <a class="btn btn-primary" href="registration" role="button">Register</a>
-      </nav>
-    </div>
-  </header>
-
-  <section class="container">
-    <!-- <button onclick="change()">Dark/Light Mode</button> --> 
-    <script type="text/javascript" src="/scripts/toggle.js"></script>
-    <!-- Rectangular switch -->
-    <label class="switch"> 
-      <input type="checkbox" onclick="change()"> 
-      <span class="slider round"></span>
-    </label>
-    <h6>Dark Mode</h6>
-  </section>
+  .landing-header
+    header(class="container")
+        .row
+            h1(class="col-xl-4")=Dashboard
+        nav(class="col-xl-8 text-right")
+            a(class="btn btn-primary" href="login" role="button")="Log In"
+            a(class="btn btn-primary" href="registration" role="button")="Registration"
+  .landing-page 
+    h1="FETA"
+    include templates/toggle.pug
