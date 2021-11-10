@@ -2,11 +2,13 @@
 
 const path = require("path")
 const { initializeApp, cert, applicationDefault } = require("firebase-admin/app")
-const { getFirestore } = require("firebase-admin/firestore");
-const { firestore } = require("firebase-admin");
+const { getFirestore } = require("firebase-admin/firestore")
+const { firestore } = require("firebase-admin")
+const bcrypt = require("bcrypt")
+const saltRounds = process.env.SALT_ROUNDS || 10
 
 class Database {
-    static gDatabase = null;
+    static gDatabase = null
 
     static {
         if (Database.gDatabase == null) {
@@ -31,27 +33,31 @@ class Database {
     }
 
     // Adds user document with given email and password. Password overwritten if user exists
-    static async addUser(newEmail, newPassword) {
+    static async addUser(email, password) {
+        const hashedPassword = await bcrypt.hash(password, saltRounds)
         const data = {
-            password: newPassword
+            password: hashedPassword
         }
 
-        return await Database.gDatabase.collection("users").doc(newEmail).set(data)
+        await Database.gDatabase.collection("users").doc(email).set(data)
     }
 
     // Returns true if the user document with the given email exists, otherwise false
     static async userExists(email) {
-        return await Database.gDatabase.collection("users").doc(email).get().exists
+        const userData = await Database.gDatabase.collection("users").doc(email).get()
+        return userData.exists
     }
 
     // Returns true if the password for a given user email is accurate
-    static async verifyCredentials(_email, _password) {
-        let user = await Database.gDatabase.collection("users").doc(_email).get()
+    static async verifyCredentials(email, password) {
+        const user = await Database.gDatabase.collection("users").doc(email).get()
 
         if (!user.exists)
             return false
 
-        return user.data().password == _password
+        const hashedPassword = user.data().password
+
+        return await bcrypt.compare(password, hashedPassword)
     }
 }
 
@@ -111,12 +117,12 @@ class User {
 
     // Returns an array with references to all categories under income
     async getIncomeCategories() {
-        return await this.income.listCollections();
+        return await this.income.listCollections()
     }
 
     // Returns an array with references to all categories under expenses
     async getExpensesCategories() {
-        return await this.expenses.listCollections();
+        return await this.expenses.listCollections()
     }
 
     // Returns a set with references to all categories under income and expenses

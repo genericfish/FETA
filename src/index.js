@@ -58,22 +58,30 @@ app.get("/login", (req, res) => res.send(compiledViews.Login({
     header: "Login"
 })))
 
-app.post("/login", function (req, res) {
-    // db.verifyCredentials(req.body.username, req.body.password); 
+app.post("/login", async (req, res) => {
+    const isValid = await Database.verifyCredentials(req.body.email, req.body.password)
 
-    res.json(req.body)
-    console.log(req.body)
+    res.send(isValid ? "Yes" : "Failed")
 })
 
 app.get("/registration", (req, res) => res.send(compiledViews.Registration({
     header: "Registration"
 })))
 
-app.post("/registration", function (req, res) {
-    // db.verifyCredentials(req.body.username, req.body.password); 
+app.post("/registration", async (req, res) => {
+    // TODO: Add error messages
 
-    res.json(req.body)
-    console.log(req.body)
+    // Check to see if email already exists
+    if (await Database.userExists(req.body.email))
+        return res.redirect("/")
+
+    // Check to see if passwords match
+    if (req.body.password != req.body.confirm)
+        return res.redirect("/registration")
+
+    Database.addUser(req.body.email, req.body.password)
+
+    return res.redirect("/dashboard")
 })
 
 app.get("/statistics", (req, res) => res.send(compiledViews.Statistics({
