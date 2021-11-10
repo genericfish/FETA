@@ -2,7 +2,8 @@
 
 const path = require("path")
 const { initializeApp, cert, applicationDefault } = require("firebase-admin/app")
-const { getFirestore } = require("firebase-admin/firestore")
+const { getFirestore } = require("firebase-admin/firestore");
+const { firestore } = require("firebase-admin");
 
 class Database {
     static gDatabase = null;
@@ -220,7 +221,7 @@ class User {
             note: note
         }
         this.savings.doc(goal).collection("changes").doc().set(data)
-        this.savings.doc(goal).update({amount: FieldValue.increment(amount)})
+        this.savings.doc(goal).update({"current": firestore.FieldValue.increment(amount)})
     }
 
     // Add an amortizations transaction which contributes to a goal. Date should be a JS Date
@@ -231,7 +232,7 @@ class User {
             note: note
         }
         this.amortizations.doc(goal).collection("changes").doc().set(data)
-        this.amortizations.doc(goal).update({amount: FieldValue.increment(amount)})
+        this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(amount)})
     }
 
     // Modifies a savings transaction which contributes to a goal.
@@ -243,7 +244,7 @@ class User {
         if(transaction.exists){
             if(change != undefined){
                 change -= transaction.data().amount
-                this.savings.doc(goal).update({amount: FieldValue.increment(change)})
+                this.savings.doc(goal).update({"current": firestore.FieldValue.increment(change)})
             }
         }
         this.savings.doc(goal).collection("changes").doc(transactionID).set(newData)
@@ -257,7 +258,7 @@ class User {
         if(transaction.exists){
             if(change != undefined){
                 change -= transaction.data().amount
-                this.amortizations.doc(goal).update({amount: FieldValue.increment(change)})
+                this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(change)})
             }
         }
         this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData)
@@ -265,16 +266,18 @@ class User {
 
     // Removes a savings transaction which contributes to a goal
     async removeSavingsTransaction(goal, transactionID){
-        let change = await this.savings.doc(goal).collection("changes").doc(transactionID).get().data().amount
+        let doc = await this.savings.doc(goal).collection("changes").doc(transactionID).get()
+        let change = doc.data().amount
         this.savings.doc(goal).collection("changes").doc(transactionID).delete()
-        this.savings.doc(goal).update({amount: FieldValue.increment(-change)})
+        this.savings.doc(goal).update({"current": firestore.FieldValue.increment(-change)})
     }
 
     // Removes an amortizations transaction which contributes to a goal
     async removeAmortizationsTransaction(goal, transactionID){
-        let change = await this.amortizations.doc(goal).collection("changes").doc(transactionID).get().data().amount
+        let doc = await this.amortizations.doc(goal).collection("changes").doc(transactionID).get()
+        let change = doc.data().amount
         this.amortizations.doc(goal).collection("changes").doc(transactionID).delete()
-        this.amortizations.doc(goal).update({amount: FieldValue.increment(-change)})
+        this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(-change)})
     }
 
 }
