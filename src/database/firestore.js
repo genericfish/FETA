@@ -2,7 +2,8 @@
 
 const path = require("path")
 const { initializeApp, cert, applicationDefault } = require("firebase-admin/app")
-const { getFirestore } = require("firebase-admin/firestore")
+const { getFirestore } = require("firebase-admin/firestore");
+const { firestore } = require("firebase-admin");
 
 class Database {
     static gDatabase = null;
@@ -152,6 +153,7 @@ class User {
     async addSavingsGoal(name, amount, date, note){
         const goal = {
             amount: amount,
+            current: 0,
             date: date,
             note: note
         }
@@ -163,6 +165,7 @@ class User {
     async addAmortizationsGoal(name, amount, date, note){
         const goal = {
             amount: amount,
+            current: 0,
             date: date,
             note: note
         }
@@ -171,6 +174,7 @@ class User {
     }
 
     // Modifies goal in a given category and gives it new data
+    
     async modifyGoal(category, name, newData) {
         if(category == "savings"){
             return await this.savings.doc(name).set(newData)
@@ -217,6 +221,7 @@ class User {
             note: note
         }
         this.savings.doc(goal).collection("changes").doc().set(data)
+        this.savings.doc(goal).update({"current": firestore.FieldValue.increment(amount)})
     }
 
     // Add an amortizations transaction which contributes to a goal. Date should be a JS Date
@@ -227,26 +232,52 @@ class User {
             note: note
         }
         this.amortizations.doc(goal).collection("changes").doc().set(data)
+        this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(amount)})
     }
 
     // Modifies a savings transaction which contributes to a goal.
+    // NOT INTENDED TO MODIFY TRANSACTION AMOUNT, MAY CAUSE UNEXPECTED PROBLEMS
     async modifySavingsTransaction(goal, transactionID, newData){
-        this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData)
+        this.savings.doc(goal).collection("changes").doc(transactionID).set(newData)
+        let transaction = await this.savings.doc(goal).collection("changes").doc(transactionID).get()
+        let change = newData.amount
+        if(transaction.exists){
+            if(change != undefined){
+                change -= transaction.data().amount
+                this.savings.doc(goal).update({"current": firestore.FieldValue.increment(change)})
+            }
+        }
+        this.savings.doc(goal).collection("changes").doc(transactionID).set(newData)
     }
 
     // Modifies an amortizations transaction which contributes to a goal.
+    // NOT INTENDED TO MODIFY TRANSACTION AMOUNT, MAY CAUSE UNEXPECTED PROBLEMS
     async modifyAmortizationsTransaction(goal, transactionID, newData){
+        let transaction = await this.amortizations.doc(goal).collection("changes").doc(transactionID).get()
+        let change = newData.amount
+        if(transaction.exists){
+            if(change != undefined){
+                change -= transaction.data().amount
+                this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(change)})
+            }
+        }
         this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData)
     }
 
     // Removes a savings transaction which contributes to a goal
     async removeSavingsTransaction(goal, transactionID){
+        let doc = await this.savings.doc(goal).collection("changes").doc(transactionID).get()
+        let change = doc.data().amount
         this.savings.doc(goal).collection("changes").doc(transactionID).delete()
+        this.savings.doc(goal).update({"current": firestore.FieldValue.increment(-change)})
     }
 
     // Removes an amortizations transaction which contributes to a goal
     async removeAmortizationsTransaction(goal, transactionID){
+        let doc = await this.amortizations.doc(goal).collection("changes").doc(transactionID).get()
+        let change = doc.data().amount
         this.amortizations.doc(goal).collection("changes").doc(transactionID).delete()
+        this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(-change)})
     }
 
 }
