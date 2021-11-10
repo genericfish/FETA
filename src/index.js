@@ -2,14 +2,34 @@
 
 global.__basedir = __dirname
 
-const path = require("path")
 const express = require("express")
+const session = require("express-session")
+const path = require("path")
 const pug = require("pug")
 const { Database, User } = require(path.join(__basedir, "database", "firestore.js"))
+const { FirestoreStore } = require("@google-cloud/connect-firestore")
 
 const app = express()
 const port = process.env.PORT || 8000
 const compileView = view => pug.compileFile(path.join(__basedir, "/views/", view))
+
+app.set("trust proxy", 1)
+app.use(
+    session({
+        secret: "fetacheese",
+        resave: true,
+        saveUninitialized: false,
+        store: new FirestoreStore({
+            dataset: Database.gDatabase,
+            kind: "express-sessions"
+        }),
+        cookie: {
+            secure: false,
+            httpOnly: true,
+            maxAge: 1000 * 60 * 15
+        }
+    })
+)
 
 const compiledViews = {
     Landing: compileView("Landing.pug"),
