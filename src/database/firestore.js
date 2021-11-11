@@ -286,6 +286,58 @@ class User {
         this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(-change)})
     }
 
+    // Adds a new item to track as a NMT
+    async addNMT(name, note){
+        const data = {
+            current: 0,
+            note: note
+        }
+        this.nmt.collection("items").doc(name).set(data)
+    }
+
+    // Modifies an NMT item
+    async modifyNMT(name, newData){
+        this.nmt.collection("items").doc(name).set(newData)
+    }
+
+    // Deletes an NFT item recursively
+    async deleteNMT(name){
+        this.deleteDocument(this.nmt.collection("items").doc(name))
+    }
+
+    // Adds a transaction for a specified NMT
+    async addNMTTransaction(nmt, amount, date, note){
+        const data = {
+            amount: amount,
+            date: date,
+            note: note
+        }
+        this.nmt.collection("items").doc(nmt).update({"current" : firestore.FieldValue.increment(amount)})
+        this.nmt.collection("items").doc(nmt).collection("changes").doc().set(data)
+    }
+
+    // Modifies a transaction for a specified NMT
+    async modifyNMTTransaction(nmt, transactionID, newData){
+        let transaction = await this.nmt.doc(nmt).collection("changes").doc(transactionID).get()
+        let change = newData.amount
+        if(transaction.exists){
+            if(change != undefined){
+                change -= transaction.data().amount
+                this.nmt.doc(goal).update({"current": firestore.FieldValue.increment(change)})
+            }
+        }
+        this.nmt.doc(nmt).collection("changes").doc(transactionID).set(newData)
+    }
+
+    // Deletes a transaction for a specified NMT
+    async removeNMTTransaction(nmt, transactionID){
+        let doc = await this.nmt.doc(nmt).collection("changes").doc(transactionID).get()
+        let change = doc.data().amount
+        this.nmt.doc(nmt).collection("changes").doc(transactionID).delete()
+        this.nmt.doc(nmt).update({"current": firestore.FieldValue.increment(-change)})
+    }
+
+
 }
 
 module.exports = {
