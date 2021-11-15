@@ -1,7 +1,6 @@
 "use strict"
 
 const express = require("express")
-const { request } = require("http")
 const path = require("path")
 const router = express.Router()
 
@@ -10,16 +9,12 @@ const { Database } = require(path.join(__basedir, "database", "firestore.js"))
 module.exports = view => {
     router
         .get("/", (req, res) => {
-            const render = view({
+            res.send(view({
                 header: "Registration",
                 error: req.session.error
-            })
-
-            console.log(req.session.error)
+            }))
 
             delete req.session.error
-
-            res.send(render)
         })
         .post("/", async (req, res) => {
             const { email, password, confirm, firstname, lastname } = req.body;
