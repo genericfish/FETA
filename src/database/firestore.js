@@ -33,10 +33,12 @@ class Database {
     }
 
     // Adds user document with given email and password. Password overwritten if user exists
-    static async addUser(email, password) {
+    static async addUser(email, firstname, lastname, password) {
         const hashedPassword = await bcrypt.hash(password, saltRounds)
         const data = {
-            password: hashedPassword
+            password: hashedPassword,
+            firstname: firstname,
+            lastname: lastname
         }
 
         await Database.gDatabase.collection("users").doc(email).set(data)

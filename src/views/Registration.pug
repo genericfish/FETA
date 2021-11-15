@@ -9,8 +9,12 @@ block content
                 .login-header
                     h3="Registration"
                     p="Please Create Login Credentials."
+                    if error
+                        p=error
             form(class="login-form" action="/registration" method="post")
                 input(type="email" name="email" placeholder="example@feta.cheese")
+                input(type="text" name="firstname" placeholder="first name")
+                input(type="text" name="lastname" placeholder="last name")
                 input(type="password" name="password" placeholder="password")
                 input(type="password" name="confirm" placeholder="confirm password")
                 input(type="submit" value="Register")
