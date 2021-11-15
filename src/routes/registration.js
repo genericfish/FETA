@@ -1,6 +1,7 @@
 "use strict"
 
 const express = require("express")
+const { request } = require("http")
 const path = require("path")
 const router = express.Router()
 
@@ -9,14 +10,16 @@ const { Database } = require(path.join(__basedir, "database", "firestore.js"))
 module.exports = view => {
     router
         .get("/", (req, res) => {
-            const error = req.session.error
+            const render = view({
+                header: "Registration",
+                error: req.session.error
+            })
+
+            console.log(req.session.error)
 
             delete req.session.error
 
-            res.send(view({
-                header: "Registration",
-                error: error
-            }))
+            res.send(render)
         })
         .post("/", async (req, res) => {
             const { email, password, confirm, firstname, lastname } = req.body;
@@ -26,7 +29,7 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(email, password, confirm, firstname, lastname)) {
                 req.session.error = "Please fill out all fields"
-                return res.redirect("/registration")
+                return req.session.save(_ => res.redirect("/registration"))
             }
 
             // Check to see if email already exists
