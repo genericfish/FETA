@@ -8,6 +8,7 @@ const path = require("path")
 const pug = require("pug")
 const { Database, User } = require(path.join(__basedir, "database", "firestore.js"))
 const { FirestoreStore } = require("@google-cloud/connect-firestore")
+const { isArgumentsObject } = require("util/types")
 
 const app = express()
 const port = process.env.PORT || 8000
@@ -16,9 +17,9 @@ const compileView = view => pug.compileFile(path.join(__basedir, "/views/", view
 app.set("trust proxy", 1)
 app.use(
     session({
-        secret: "fetacheese",
+        secret: process.env.SESSION_SECRET || "fetacheese",
         resave: true,
-        saveUninitialized: false,
+        saveUninitialized: true,
         store: new FirestoreStore({
             dataset: Database.gDatabase,
             kind: "express-sessions"
@@ -64,12 +65,27 @@ app.post("/login", async (req, res) => {
     res.send(isValid ? "Yes" : "Failed")
 })
 
-app.get("/registration", (req, res) => res.send(compiledViews.Registration({
-    header: "Registration"
-})))
+app.get("/registration", (req, res) => {
+    const error = req.session.error
+
+    delete req.session.error
+
+    res.send(compiledViews.Registration({
+        header: "Registration",
+        error: error
+    }))
+})
 
 app.post("/registration", async (req, res) => {
-    // TODO: Add error messages
+    const { email, password, confirm, firstname, lastname } = req.body;
+
+    const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
+
+    // Check to see if any field was left blank
+    if (anyEmpty(email, password, confirm, firstname, lastname)) {
+        req.session.error = "Please fill out all fields"
+        return res.redirect("/registration")
+    }
 
     // Check to see if email already exists
     if (await Database.userExists(req.body.email))
