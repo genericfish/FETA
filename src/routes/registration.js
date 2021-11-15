@@ -9,12 +9,14 @@ const { Database } = require(path.join(__basedir, "backend", "firestore.js"))
 module.exports = view => {
     router
         .get("/", (req, res) => {
-            res.send(view({
+            const render = view({
                 header: "Registration",
                 error: req.session.error
-            }))
+            })
 
             delete req.session.error
+
+            res.send(render)
         })
         .post("/", async (req, res) => {
             const { email, password, confirm, firstname, lastname } = req.body;
