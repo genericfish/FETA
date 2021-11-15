@@ -1,67 +1,7 @@
 "use strict"
 
-const path = require("path")
-const { initializeApp, cert, applicationDefault } = require("firebase-admin/app")
-const { getFirestore } = require("firebase-admin/firestore")
 const { firestore } = require("firebase-admin")
-const bcrypt = require("bcrypt")
-const saltRounds = process.env.SALT_ROUNDS || 10
-
-class Database {
-    static gDatabase = null
-
-    static {
-        if (Database.gDatabase == null) {
-            let firestoreSettings = {}
-
-            if (process.env.GOOGLE_APPLICATION_CREDENTIALS !== undefined) {
-                firestoreSettings.credential = applicationDefault()
-            } else {
-                const serviceAccount = require(path.join(__basedir, "../private.json"))
-                firestoreSettings.credential = cert(serviceAccount)
-            }
-
-            initializeApp(firestoreSettings)
-
-            Database.gDatabase = getFirestore()
-        }
-    }
-
-    // Returns references to all users in the database
-    static async getUsers() {
-        return await Database.gDatabase.collection("users").get()
-    }
-
-    // Adds user document with given email and password. Password overwritten if user exists
-    static async addUser(email, firstname, lastname, password) {
-        const hashedPassword = await bcrypt.hash(password, saltRounds)
-        const data = {
-            password: hashedPassword,
-            firstname: firstname,
-            lastname: lastname
-        }
-
-        await Database.gDatabase.collection("users").doc(email).set(data)
-    }
-
-    // Returns true if the user document with the given email exists, otherwise false
-    static async userExists(email) {
-        const userData = await Database.gDatabase.collection("users").doc(email).get()
-        return userData.exists
-    }
-
-    // Returns true if the password for a given user email is accurate
-    static async verifyCredentials(email, password) {
-        const user = await Database.gDatabase.collection("users").doc(email).get()
-
-        if (!user.exists)
-            return false
-
-        const hashedPassword = user.data().password
-
-        return await bcrypt.compare(password, hashedPassword)
-    }
-}
+const { Database } = require("./database.js")
 
 class User {
     constructor(email) {
@@ -73,6 +13,22 @@ class User {
         this.savings = this.goals.collection("savings")
         this.amortizations = this.goals.collection("amortizations")
         this.nmt = this.transactions.doc("nmt")
+    }
+
+    // Returns an array of transactions from a collection within [dateMin, dateMax], where dates are JS Date objects
+    async #getTransaction(collection, dateMin, dateMax) {
+        let query = collection
+
+        // dateMax and dateMin are optional parameters
+        if (dateMax !== undefined)
+            query = query.where("date", "<=", dateMax)
+
+        if (dateMin !== undefined)
+            query = query.where("date", ">=", dateMin)
+
+        const transactions = await query.get()
+
+        return transactions.docs
     }
 
     // Adds a transaction document to income. Provided date should be a JS Date
@@ -138,27 +94,17 @@ class User {
     // Returns an array of income transactions within a category and date range. Dates should be JS Dates
     async getIncomeTransactions(category, dateMin, dateMax) {
         const cat = this.income.collection(category)
-        const transactions = await cat
-            .where("date", "<=", dateMax)
-            .where("date", ">=", dateMin)
-            .get()
-
-        return transactions.docs
+        return await this.#getTransaction(cat, dateMin, dateMax)
     }
 
     // Returns an array of expense transactions within a category and date range. Dates should be JS Dates
     async getExpensesTransactions(category, dateMin, dateMax) {
         const cat = this.expenses.collection(category)
-        const transactions = await cat
-            .where("date", "<=", dateMax)
-            .where("date", ">=", dateMin)
-            .get()
-
-        return transactions.docs
+        return await this.#getTransaction(cat, dateMin, dateMax)
     }
 
     // Adds a savings goal document to expenses. Date should be a JS Date
-    async addSavingsGoal(name, amount, date, note){
+    async addSavingsGoal(name, amount, date, note) {
         const goal = {
             amount: amount,
             current: 0,
@@ -170,7 +116,7 @@ class User {
     }
 
     // Adds a savings goal document to expenses. Date should be a JS Date
-    async addAmortizationsGoal(name, amount, date, note){
+    async addAmortizationsGoal(name, amount, date, note) {
         const goal = {
             amount: amount,
             current: 0,
@@ -182,20 +128,19 @@ class User {
     }
 
     // Modifies goal in a given category and gives it new data
-    
     async modifyGoal(category, name, newData) {
-        if(category == "savings"){
+        if (category == "savings") {
             return await this.savings.doc(name).set(newData)
         }
-        else if(category == "amortizations"){
+        else if (category == "amortizations") {
             return await this.savings.doc(name).set(newData)
         }
     }
 
     // Recursively deletes the specified document reference
-    async deleteDocument(docRef){
+    async deleteDocument(docRef) {
         let subcollections = await docRef.listCollections()
-        for (let i = 0; i < subcollections.length; i++){
+        for (let i = 0; i < subcollections.length; i++) {
             process.nextTick(() => {
                 deleteCollection(subcollections[i])
             })
@@ -204,55 +149,55 @@ class User {
     }
 
     // Recursively deletes the specified collection reference
-    async deleteCollection(collRef){
+    async deleteCollection(collRef) {
         let documents = await collRef.get().docs
-        for (let i = 0; i < documents.length; i++){
+        for (let i = 0; i < documents.length; i++) {
             this.deleteDocument(documents[i])
         }
     }
 
     // Removes goal in a given category and gives it new data
     async removeGoal(category, name) {
-        if(category == "savings"){
+        if (category == "savings") {
             this.deleteDocument(this.savings.doc(name))
         }
-        else if(category == "amortizations"){
+        else if (category == "amortizations") {
             this.deleteDocument(this.amortizations.doc(name))
         }
     }
 
     // Add a savings transaction which contributes to a goal. Date should be a JS Date
-    async addSavingsTransaction(goal, date, amount, note){
+    async addSavingsTransaction(goal, date, amount, note) {
         const data = {
             date: date,
             amount: amount,
             note: note
         }
         this.savings.doc(goal).collection("changes").doc().set(data)
-        this.savings.doc(goal).update({"current": firestore.FieldValue.increment(amount)})
+        this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(amount) })
     }
 
     // Add an amortizations transaction which contributes to a goal. Date should be a JS Date
-    async addAmortizationsTransaction(goal, date, amount, note){
+    async addAmortizationsTransaction(goal, date, amount, note) {
         const data = {
             date: date,
             amount: amount,
             note: note
         }
         this.amortizations.doc(goal).collection("changes").doc().set(data)
-        this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(amount)})
+        this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(amount) })
     }
 
     // Modifies a savings transaction which contributes to a goal.
     // NOT INTENDED TO MODIFY TRANSACTION AMOUNT, MAY CAUSE UNEXPECTED PROBLEMS
-    async modifySavingsTransaction(goal, transactionID, newData){
+    async modifySavingsTransaction(goal, transactionID, newData) {
         this.savings.doc(goal).collection("changes").doc(transactionID).set(newData)
         let transaction = await this.savings.doc(goal).collection("changes").doc(transactionID).get()
         let change = newData.amount
-        if(transaction.exists){
-            if(change != undefined){
+        if (transaction.exists) {
+            if (change != undefined) {
                 change -= transaction.data().amount
-                this.savings.doc(goal).update({"current": firestore.FieldValue.increment(change)})
+                this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
             }
         }
         this.savings.doc(goal).collection("changes").doc(transactionID).set(newData)
@@ -260,36 +205,36 @@ class User {
 
     // Modifies an amortizations transaction which contributes to a goal.
     // NOT INTENDED TO MODIFY TRANSACTION AMOUNT, MAY CAUSE UNEXPECTED PROBLEMS
-    async modifyAmortizationsTransaction(goal, transactionID, newData){
+    async modifyAmortizationsTransaction(goal, transactionID, newData) {
         let transaction = await this.amortizations.doc(goal).collection("changes").doc(transactionID).get()
         let change = newData.amount
-        if(transaction.exists){
-            if(change != undefined){
+        if (transaction.exists) {
+            if (change != undefined) {
                 change -= transaction.data().amount
-                this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(change)})
+                this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
             }
         }
         this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData)
     }
 
     // Removes a savings transaction which contributes to a goal
-    async removeSavingsTransaction(goal, transactionID){
+    async removeSavingsTransaction(goal, transactionID) {
         let doc = await this.savings.doc(goal).collection("changes").doc(transactionID).get()
         let change = doc.data().amount
         this.savings.doc(goal).collection("changes").doc(transactionID).delete()
-        this.savings.doc(goal).update({"current": firestore.FieldValue.increment(-change)})
+        this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(-change) })
     }
 
     // Removes an amortizations transaction which contributes to a goal
-    async removeAmortizationsTransaction(goal, transactionID){
+    async removeAmortizationsTransaction(goal, transactionID) {
         let doc = await this.amortizations.doc(goal).collection("changes").doc(transactionID).get()
         let change = doc.data().amount
         this.amortizations.doc(goal).collection("changes").doc(transactionID).delete()
-        this.amortizations.doc(goal).update({"current": firestore.FieldValue.increment(-change)})
+        this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(-change) })
     }
 
     // Adds a new item to track as a NMT
-    async addNMT(name, note){
+    async addNMT(name, note) {
         const data = {
             current: 0,
             note: note
@@ -298,51 +243,46 @@ class User {
     }
 
     // Modifies an NMT item
-    async modifyNMT(name, newData){
+    async modifyNMT(name, newData) {
         this.nmt.collection("items").doc(name).set(newData)
     }
 
     // Deletes an NFT item recursively
-    async deleteNMT(name){
+    async deleteNMT(name) {
         this.deleteDocument(this.nmt.collection("items").doc(name))
     }
 
     // Adds a transaction for a specified NMT
-    async addNMTTransaction(nmt, amount, date, note){
+    async addNMTTransaction(nmt, amount, date, note) {
         const data = {
             amount: amount,
             date: date,
             note: note
         }
-        this.nmt.collection("items").doc(nmt).update({"current" : firestore.FieldValue.increment(amount)})
+        this.nmt.collection("items").doc(nmt).update({ "current": firestore.FieldValue.increment(amount) })
         this.nmt.collection("items").doc(nmt).collection("changes").doc().set(data)
     }
 
     // Modifies a transaction for a specified NMT
-    async modifyNMTTransaction(nmt, transactionID, newData){
+    async modifyNMTTransaction(nmt, transactionID, newData) {
         let transaction = await this.nmt.doc(nmt).collection("changes").doc(transactionID).get()
         let change = newData.amount
-        if(transaction.exists){
-            if(change != undefined){
+        if (transaction.exists) {
+            if (change != undefined) {
                 change -= transaction.data().amount
-                this.nmt.doc(goal).update({"current": firestore.FieldValue.increment(change)})
+                this.nmt.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
             }
         }
         this.nmt.doc(nmt).collection("changes").doc(transactionID).set(newData)
     }
 
     // Deletes a transaction for a specified NMT
-    async removeNMTTransaction(nmt, transactionID){
+    async removeNMTTransaction(nmt, transactionID) {
         let doc = await this.nmt.doc(nmt).collection("changes").doc(transactionID).get()
         let change = doc.data().amount
         this.nmt.doc(nmt).collection("changes").doc(transactionID).delete()
-        this.nmt.doc(nmt).update({"current": firestore.FieldValue.increment(-change)})
+        this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(-change) })
     }
-
-
 }
 
-module.exports = {
-    Database: Database,
-    User: User
-}
+module.exports = { User: User }

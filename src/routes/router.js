@@ -4,7 +4,7 @@ const express = require("express")
 const session = require("express-session")
 const pug = require("pug")
 const path = require("path")
-const { Database } = require(path.join(__basedir, "backend", "firestore.js"))
+const { Database } = require(path.join(__basedir, "backend", "firestore"))
 const { FirestoreStore } = require("@google-cloud/connect-firestore")
 const router = express.Router()
 
