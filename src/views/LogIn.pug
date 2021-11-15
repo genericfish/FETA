@@ -9,6 +9,8 @@ block content
                 .login-header
                     h3="LOGIN"
                     p="Please enter your credentials to login."
+                    if error
+                        p=error
             form(class="login-form" action="/login" method="post")
                 input(type="email" name="email" placeholder="example@feta.cheese")
                 input(type="password" name="password" placeholder="password")

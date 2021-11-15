@@ -8,13 +8,40 @@ const { Database } = require(path.join(__basedir, "backend", "firestore.js"))
 
 module.exports = view => {
     router
-        .get("/", (req, res) => res.send(view({
-            header: "Login"
-        })))
-        .post("/", async (req, res) => {
-            const isValid = await Database.verifyCredentials(req.body.email, req.body.password)
+        .get("/", (req, res) => {
+            const render = view({
+                header: "Login",
+                error: req.session.error
+            })
 
-            res.send(isValid ? "Yes" : "Failed")
+            delete req.session.error
+
+            res.send(render)
+        })
+        .post("/", async (req, res) => {
+            const { email, password } = req.body
+            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
+
+            // Check to see if any field was left blank
+            if (anyEmpty(email, password)) {
+                req.session.error = "Please fill out all fields"
+                return req.session.save(_ => res.redirect("/login"))
+            }
+
+            const isValid = await Database.verifyCredentials(email, password)
+
+            if (isValid) {
+                // TODO: Make token for user validation instead of setting email
+                req.session.loggedIn = true
+                req.session.email = email
+
+                req.session.save(_ => {
+                    res.redirect("/dashboard")
+                })
+            } else {
+                req.session.error = "Invalid email or password"
+                return req.session.save(_ => res.redirect("/login"))
+            }
         })
     return router
 }
