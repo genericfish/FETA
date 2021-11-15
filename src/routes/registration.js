@@ -4,7 +4,7 @@ const express = require("express")
 const path = require("path")
 const router = express.Router()
 
-const { Database } = require(path.join(__basedir, "database", "firestore.js"))
+const { Database } = require(path.join(__basedir, "backend", "firestore.js"))
 
 module.exports = view => {
     router
