@@ -100,6 +100,7 @@ module.exports = view => {
                 req.session.error = "Please fill out all fields"
                 return req.session.save(_ => res.redirect("/transaction"))
             }
+            
             const transaction = {date: new Date(req.body.date), amount: parseInt(req.body.amount), note: req.body.note}
 
             if (req.body.type == "expense") {
