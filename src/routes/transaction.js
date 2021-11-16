@@ -92,15 +92,15 @@ module.exports = view => {
             return res.redirect("/transaction")
         })
         .post("/edit", async (req, res) => {
-            const { ID, type, category, date, note, amount } = req.body
+            const { ID, type, category, date, amount } = req.body
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
-            if (anyEmpty(ID, type, category, date, note, amount)) {
+            if (anyEmpty(ID, type, category, date, amount)) {
                 req.session.error = "Please fill out all fields"
                 return req.session.save(_ => res.redirect("/transaction"))
             }
-            
+
             const transaction = {date: new Date(req.body.date), amount: parseInt(req.body.amount), note: req.body.note}
 
             if (req.body.type == "expense") {
