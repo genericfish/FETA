@@ -51,7 +51,7 @@ module.exports = view => {
             message = "Good Job!"
         }
         res.send(view({
-            header: "Transactions", 
+            header: "Statistics", 
             incomes: a,
             expenses: b,
             income_sum: income_sum, 
