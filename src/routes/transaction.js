@@ -30,7 +30,7 @@ module.exports = view => {
                 for(let i = 0; i < expense_categories.length; i++) {
                     let expense_array = await user.getExpensesTransactions(expense_categories[i].id, new Date("1970-01-01"), new Date("2021-11-15"))
                     for(let j = 0; j < expense_array.length; j++) {
-                        let expense = expense_array[j].data().amount
+                        let expense = -expense_array[j].data().amount
                         let date = expense_array[j].data().date.toDate().toDateString()
                         let note = expense_array[j].data().note
                         let category = expense_categories[i].id
