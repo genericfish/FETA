@@ -1,9 +1,10 @@
 "use strict"
 
 const express = require("express")
+const path = require("path")
 const { database } = require("firebase-admin")
-const { User } = require("../backend/firestore")
-const { Database } = require("../backend/firestore")
+const { User } = require("../backend/firestore/user")
+const { Database } = require("../backend/firestore/database")
 const router = express.Router()
 
 module.exports = view => {
@@ -55,18 +56,18 @@ module.exports = view => {
                 return req.session.save(_ => res.redirect("/transaction"))
             }
             
+            //not working 
+
+            /*if(req.body.type == "income" || req.body.type == "Income" || req.body.type == "INCOME") {
+                await user.addIncome(req.body.category,req.body.date,req.body.amount,req.body.note)
+            } else if (req.body.type == "expense" || req.body.type == "Expense" || req.body.type == "EXPENSE") {
+                await user.addExpense(req.body.category,req.body.date,req.body.amount,req.body.note)
+            } else {
+                req.session.error = "Please enter a valid type of transaction"
+                return req.session.save(_ => res.redirect("/transaction"))
+            }*/
+
             return res.redirect("/transaction")
-            // if(req.body.type == income || req.body.type == Income || req.body.type == INCOME) {
-            //     await user.addIncome(req.body.category,req.body.date,req.body.amount,req.body.note)
-            //     return res.redirect("/transaction")
-            // } else 
-            // if (req.body.type == expense || req.body.type == Expense || req.body.type == EXPENSE) {
-            //     await user.addExpense(req.body.category,req.body.date,req.body.amount,req.body.note)
-            //     return res.redirect("/transaction")
-            // } else {
-            //     req.session.error = "Please enter a valid type of transaction"
-            //     return req.session.save(_ => res.redirect("/transaction"))
-            // }
         })
         .post("/remove", async(req,res) =>{
             const { type, category, amount, date} = req.body;
