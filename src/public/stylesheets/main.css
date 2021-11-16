@@ -41,6 +41,7 @@ body{
   color:black; 
 }
 
+
  .dark-mode{
   background-color: black;
   color:white;
@@ -145,19 +146,19 @@ header a img{
 }
 
 .dashboard-page {
-  width: 500px;
+  width: 600px;
   margin: 0 auto;
   text-align: center;
 }
 
 .transaction-page{
-  width: 500px;
+  width: 600px;
   margin: 0 auto;
   text-align: center;
 }
 
 .statistics-page{
-  width: 500px;
+  width: 600px;
   margin: 0 auto;
   text-align: center;
 }
