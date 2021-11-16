@@ -51,10 +51,9 @@ module.exports = view => {
 
         })
         .post("/add", async (req, res) => {
-            const { type, category, amount, date, note } = req.body;
-
+            const { type, category, amount, date, note } = req.body
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
-            const user = new User("kornelharm@gmail.com")
+            const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(type, category, amount, date)) {
                 req.session.error = "Please fill out all fields"
@@ -75,9 +74,9 @@ module.exports = view => {
             return res.redirect("/transaction")
         })
         .post("/remove", async (req, res) => {
-            const { ID, type, category } = req.body;
+            const { ID, type, category } = req.body
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
-            const user = new User("kornelharm@gmail.com")
+            const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(ID, type, category)) {
                 req.session.error = "Please fill out all fields"
