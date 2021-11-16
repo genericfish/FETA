@@ -5,5 +5,13 @@ block content
   .dashboard-page 
     h1="Dashboard"
     include templates/toggle.pug
+    form(class="add-transaction-form" action="/dashboard/add" method="post")
+      input(type="text" name="type" placeholder="income or expense")
+      input(type="text" name="category" placeholder="category")
+      input(type="amount" name="amount" placeholder="amount")
+      input(type="date" name="date" placeholder="yyyy-mm-dd")
+      input(type="note" name="note" placeholder="note")
+      input(type="submit" value="Add Transaction")
+
     h3="Your Net Saving is $"+net 
     h5=message
