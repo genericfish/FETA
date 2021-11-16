@@ -23,9 +23,8 @@ module.exports = view => {
                         let income = income_array[j].data().amount
                         let date = income_array[j].data().date.toDate().toDateString()
                         let note = income_array[j].data().note
-
                         let category = income_categories[i].id
-                        let id = income_array[i].id
+                        let id = income_array[j].id
                         a.push([id, "income", income, date, note, category])
                     }
                 }
@@ -36,9 +35,8 @@ module.exports = view => {
                         let expense = -expense_array[j].data().amount
                         let date = expense_array[j].data().date.toDate().toDateString()
                         let note = expense_array[j].data().note
-
                         let category = expense_categories[i].id
-                        let id = expense_array[i].id
+                        let id = expense_array[j].id
                         a.push([id, "expense", expense, date, note, category])
                     }
                 }
