@@ -24,7 +24,8 @@ module.exports = view => {
                         let date = income_array[j].data().date.toDate().toDateString()
                         let note = income_array[j].data().note
                         let category = income_categories[i].id
-                        a.push([income,date,note,category])
+                        let id = income_array[i].id
+                        a.push([id,"income",income,date,note,category])
                     }
                 }
                 for(let i = 0; i < expense_categories.length; i++) {
@@ -34,10 +35,11 @@ module.exports = view => {
                         let date = expense_array[j].data().date.toDate().toDateString()
                         let note = expense_array[j].data().note
                         let category = expense_categories[i].id
-                        a.push([expense,date,note,category])
+                        let id = expense_array[i].id
+                        a.push([id,"expense",expense,date,note,category])
                     }
                 }
-                a.sort(function(a,b) {return b[2] - a[2]})
+                a.sort(function(a,b) {return b[3] - a[3]})
                 res.send(view({
                     header: "Transactions", 
                     transactions: a
@@ -58,25 +60,32 @@ module.exports = view => {
             
             //not working 
 
-            /*if(req.body.type == "income" || req.body.type == "Income" || req.body.type == "INCOME") {
-                await user.addIncome(req.body.category,req.body.date,req.body.amount,req.body.note)
-            } else if (req.body.type == "expense" || req.body.type == "Expense" || req.body.type == "EXPENSE") {
-                await user.addExpense(req.body.category,req.body.date,req.body.amount,req.body.note)
+            if(req.body.type.toLowerCase() == "income") {
+                await user.addIncome(req.body.category,new Date(req.body.date),parseInt(req.body.amount),req.body.note)
+            } else if (req.body.type.toLowerCase() == "expense") {
+                await user.addExpense(req.body.category,new Date(req.body.date),parseInt(req.body.amount),req.body.note)
             } else {
                 req.session.error = "Please enter a valid type of transaction"
                 return req.session.save(_ => res.redirect("/transaction"))
-            }*/
+            }
 
             return res.redirect("/transaction")
         })
         .post("/remove", async(req,res) =>{
-            const { type, category, amount, date} = req.body;
+            const {ID,type,category} = req.body;
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User("kornelharm@gmail.com") 
             // Check to see if any field was left blank
-            if (anyEmpty(type, category, amount, date)) {
+            if (anyEmpty(ID, type, category)) {
                 req.session.error = "Please fill out all fields"
                 return req.session.save(_ => res.redirect("/transaction"))
+            }
+            
+            if(req.body.type="expense") {
+                user.removeExpense(req.body.category,req.body.ID)
+            } 
+            if(req.body.type="income") {
+                user.removeIncome(req.body.category,req.body.ID)
             }
             return res.redirect("/transaction")
         })

@@ -7,24 +7,26 @@ block content
     include templates/toggle.pug
 
     form(class="add-transaction-form" action="/transaction/add" method="post")
-      input(type="text" name="type of transaction" placeholder="income or expense")
+      input(type="text" name="type" placeholder="income or expense")
       input(type="text" name="category" placeholder="category")
       input(type="amount" name="amount" placeholder="amount")
       input(type="date" name="date" placeholder="yyyy-mm-dd")
       input(type="note" name="note" placeholder="note")
       input(type="submit" value="Add Transaction")
 
-    form(class="remove-transaction-form" action="/transaction/remove" method="post")
-      input(type="text" name="type of transaction" placeholder="income or expense")
-      input(type="text" name="category" placeholder="category")
-      input(type="amount" name="amount" placeholder="amount")
-      input(type="date" name="date" placeholder="yyyy-mm-dd")
-      input(type="submit" value="Remove Transaction")
-
-    ul 
+    table 
       each transaction in transactions 
-        li=transaction 
+        tr 
+          each field, index in transaction
+            if index > 1
+              td=field
+          td
+            form(class="remove-transaction-form" action="/transaction/remove" method="post")
+              input(type="hidden" name="ID" value=transaction[0])
+              input(type="hidden" name="type" value=transaction[1])
+              input(type="hidden" name="category" value=transaction[5])
+              input(type="submit" value="Remove")
       else 
-        li No transactions
+        tr No transactions
 
   
