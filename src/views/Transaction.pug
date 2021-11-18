@@ -7,24 +7,44 @@ block content
     include templates/toggle.pug
 
     form(class="add-transaction-form" action="/transaction/add" method="post")
-      input(type="text" name="type of transaction" placeholder="income or expense")
+      input(type="text" name="type" placeholder="income or expense")
       input(type="text" name="category" placeholder="category")
       input(type="amount" name="amount" placeholder="amount")
       input(type="date" name="date" placeholder="yyyy-mm-dd")
       input(type="note" name="note" placeholder="note")
       input(type="submit" value="Add Transaction")
 
-    form(class="remove-transaction-form" action="/transaction/remove" method="post")
-      input(type="text" name="type of transaction" placeholder="income or expense")
-      input(type="text" name="category" placeholder="category")
-      input(type="amount" name="amount" placeholder="amount")
-      input(type="date" name="date" placeholder="yyyy-mm-dd")
-      input(type="submit" value="Remove Transaction")
-
-    ul 
-      each transaction in transactions 
-        li=transaction 
+    table 
+      each transaction,idx in transactions 
+        tr 
+          each field, index in transaction
+            if index > 1
+              td=field
+          td
+            form(class="remove-transaction-form" action="/transaction/remove" method="post")
+              input(type="hidden" name="ID" value=transaction[0])
+              input(type="hidden" name="type" value=transaction[1])
+              input(type="hidden" name="category" value=transaction[5])
+              input(type="submit" value="Remove")
+          td
+            button(type="button" class="btn btn-primary" data-toggle="modal" data-target=`#exampleModal${idx}`) Edit
+            .modal.fade(id=`exampleModal${idx}` tabIndex="-1" role="dialog" aria-hidden="true" aria-labelledby=`exampleModalLabel${idx}`)
+              .modal-dialog(role="document")
+                .modal-content
+                  .modal-header
+                    h5(class="modal-title" id="exampleModalLabel") Edit Transaction
+                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                      span(aria-hidden="true") &times;
+                  .modal-body
+                    form(class="edit-transaction-form" action="/transaction/edit" method="post")
+                      input(type="hidden" name="ID" value=transaction[0])
+                      input(type="hidden" name="type" value=transaction[1])
+                      input(type="hidden" name="category" value=transaction[5])
+                      input(type="hidden" name="date" value=transaction[3])
+                      input(type="hidden" name="note" value=transaction[4])
+                      input(type="amount" name="amount" placeholder="amount")
+                      input(type="submit" value="Edit")
       else 
-        li No transactions
+        tr No transactions
 
   
