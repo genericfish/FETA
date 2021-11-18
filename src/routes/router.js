@@ -40,14 +40,13 @@ glob.sync(path.join(__basedir, "views", "*.pug"))
 
 glob.sync(path.join(__basedir, "routes", "*.js"))
     .forEach(file => {
-        if (file === __filename)
+        if (path.normalize(file) === __filename)
             return
 
         const routerName = path.basename(file, path.extname(file)).toLowerCase()
         let routerPath = routerName
 
-        if (routerName === "landing")
-           routerPath = ""
+        console.log(file, __filename)
 
         router.use(`/${routerPath}`, require(file)(compiledViews[routerName]))
     })
