@@ -2,9 +2,7 @@
 
 const express = require("express")
 const path = require("path")
-const { database } = require("firebase-admin")
-const { User } = require("../backend/firestore/user")
-const { Database } = require("../backend/firestore/database")
+const { User } = require(path.join(__basedir, "backend", "firestore"))
 const router = express.Router()
 
 module.exports = view => {
@@ -18,7 +16,7 @@ module.exports = view => {
                 let expense_categories = await user.getExpensesCategories()
                 let a = []
                 for (let i = 0; i < income_categories.length; i++) {
-                    let income_array = await user.getIncomeTransactions(income_categories[i].id, new Date("1970-01-01"), new Date("2021-11-15"))
+                    let income_array = await user.getIncomeTransactions(income_categories[i].id)
                     for (let j = 0; j < income_array.length; j++) {
                         let income = income_array[j].data().amount
                         let date = income_array[j].data().date.toDate().toDateString()
@@ -30,7 +28,7 @@ module.exports = view => {
                 }
 
                 for (let i = 0; i < expense_categories.length; i++) {
-                    let expense_array = await user.getExpensesTransactions(expense_categories[i].id, new Date("1970-01-01"), new Date("2021-11-15"))
+                    let expense_array = await user.getExpensesTransactions(expense_categories[i].id)
                     for (let j = 0; j < expense_array.length; j++) {
                         let expense = -expense_array[j].data().amount
                         let date = expense_array[j].data().date.toDate().toDateString()
@@ -99,7 +97,7 @@ module.exports = view => {
                 return req.session.save(_ => res.redirect("/transaction"))
             }
 
-            const transaction = {date: new Date(req.body.date), amount: parseInt(req.body.amount), note: req.body.note}
+            const transaction = { date: new Date(req.body.date), amount: parseInt(req.body.amount), note: req.body.note }
 
             if (req.body.type == "expense") {
                 await user.modifyExpense(req.body.category, req.body.ID, transaction)
