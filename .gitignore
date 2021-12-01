@@ -2,3 +2,4 @@ node_modules
 private.json
 .DS_Store
 credentials.json
+token.json
