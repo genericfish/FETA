@@ -3,7 +3,7 @@
 const express = require("express")
 const path = require("path")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
-const { Display } = require(path.join(__basedir, "backend", "money"))
+const { Money } = require(path.join(__basedir, "backend", "money"))
 const router = express.Router()
 
 module.exports = view => {
@@ -22,7 +22,7 @@ module.exports = view => {
                 let income_array = await user.getIncomeTransactions(income_categories[i].id)
                 for (let j = 0; j < income_array.length; j++) {
                     let income_amount = income_array[j].data().amount
-                    income_sum += Display(income_amount)
+                    income_sum += income_amount
                 }
 
             }
@@ -30,7 +30,7 @@ module.exports = view => {
                 let expense_array = await user.getExpensesTransactions(expense_categories[i].id)
                 for (let j = 0; j < expense_array.length; j++) {
                     let expense_amount = expense_array[j].data().amount
-                    expense_sum += Display(expense_amount)
+                    expense_sum += expense_amount
                 }
             }
             net = income_sum - expense_sum
@@ -44,9 +44,9 @@ module.exports = view => {
             }
             res.send(view({
                 header: "Dashboard",
-                income_sum: income_sum,
-                expense_sum: expense_sum,
-                net: net,
+                income_sum: new Money(income_sum).Display,
+                expense_sum: new Money(expense_sum).Display,
+                net: new Money(net).Display,
                 message: message
             }))
         })

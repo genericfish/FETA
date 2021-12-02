@@ -4,7 +4,7 @@ const path = require("path")
 const { firestore } = require("firebase-admin")
 const { Database } = require("./")
 const { Gmail } = require(path.join(__basedir, "backend", "gmail"))
-const { Undisplay } = require(path.join(__basedir, "backend", "money"))
+const { Money } = require(path.join(__basedir, "backend", "money"))
 
 class User {
     constructor(email) {
@@ -35,6 +35,18 @@ class User {
         return transactions.docs
     }
 
+    async #updateTotals(delta) {
+        await this.reference.set({ total: firestore.FieldValue.increment(delta) }, { merge: true })
+
+        this.reference.get().then(ref => {
+            const total = new Money(ref.data().total).Display;
+
+            if (total < 0)
+                Gmail.send(this.email, "You're broke", `The total amount across all your accounts is ${total}.`)
+        })
+
+    }
+
     // Adds a transaction document to income. Provided date should be a JS Date
     async addIncome(category, date, amount, note) {
         amount = Undisplay(amount)
@@ -45,7 +57,7 @@ class User {
             note: note
         }
 
-        this.reference.set({ total: firestore.FieldValue.increment(amount) }, { merge: true })
+        this.#updateTotals(amount)
 
         return await this.income.collection(category).doc().set(transaction, { merge: true })
     }
@@ -60,7 +72,7 @@ class User {
             note: note
         }
 
-        this.reference.set({ total: firestore.FieldValue.increment(-amount) }, { merge: true })
+        this.#updateTotals(-amount)
 
         return await this.expenses.collection(category).doc().set(transaction, { merge: true })
     }
@@ -73,7 +85,7 @@ class User {
 
             if (change != undefined) {
                 change -= transaction.data().amount
-                this.reference.set({ total: firestore.FieldValue.increment(change) }, { merge: true })
+                this.#updateTotals(change)
             }
         }
 
@@ -88,7 +100,7 @@ class User {
 
             if (change != undefined) {
                 change -= transaction.data().amount
-                this.reference.set({ total: firestore.FieldValue.increment(-change) }, { merge: true })
+                this.#updateTotals(-change)
             }
         }
 
@@ -101,7 +113,7 @@ class User {
         let change = transaction.data().amount
 
         if (change != undefined)
-            this.reference.set({ total: firestore.FieldValue.increment(-change) }, { merge: true })
+            this.#updateTotals(-change)
 
         return await this.income.collection(category).doc(transactionID).delete()
     }
@@ -112,7 +124,7 @@ class User {
         let change = transaction.data().amount
 
         if (change != undefined)
-            this.reference.set({ total: firestore.FieldValue.increment(change) }, { merge: true })
+            this.#updateTotals(change)
 
         return await this.expenses.collection(category).doc(transactionID).delete()
     }

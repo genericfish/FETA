@@ -3,7 +3,7 @@
 const express = require("express")
 const path = require("path")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
-const { Display } = require(path.join(__basedir, "backend", "money"))
+const { Money } = require(path.join(__basedir, "backend", "money"))
 const router = express.Router()
 
 module.exports = view => {
@@ -24,7 +24,7 @@ module.exports = view => {
                     let note = income_array[j].data().note
                     let category = income_categories[i].id
                     let id = income_array[j].id
-                    a.push([id, "income", Display(income), date, note, category])
+                    a.push([id, "income", new Money(income).Display, date, note, category])
                 }
             }
 
@@ -36,7 +36,7 @@ module.exports = view => {
                     let note = expense_array[j].data().note
                     let category = expense_categories[i].id
                     let id = expense_array[j].id
-                    a.push([id, "expense", Display(expense), date, note, category])
+                    a.push([id, "expense", new Money(expense).Display, date, note, category])
                 }
             }
             a.sort(function (a, b) { return b[3] - a[3] })
