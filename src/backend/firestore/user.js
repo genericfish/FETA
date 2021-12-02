@@ -1,10 +1,13 @@
 "use strict"
 
+const path = require("path")
 const { firestore } = require("firebase-admin")
-const { Database } = require("./database.js")
+const { Database } = require("./")
+const { Gmail } = require(path.join(__basedir, "backend", "gmail"))
 
 class User {
     constructor(email) {
+        this.email = email
         this.reference = Database.gDatabase.collection("users").doc(email)
         this.transactions = this.reference.collection("transactions")
         this.income = this.transactions.doc("income")
@@ -33,34 +36,62 @@ class User {
 
     // Adds a transaction document to income. Provided date should be a JS Date
     async addIncome(category, date, amount, note) {
+        amount = Math.round(amount * 100, 2)
+
         const transaction = {
             date: date,
             amount: amount,
             note: note
         }
 
-        return await this.income.collection(category).doc().set(transaction)
+        this.reference.set({ total: firestore.FieldValue.increment(amount) }, { merge: true })
+
+        return await this.income.collection(category).doc().set(transaction, { merge: true })
     }
 
     // Adds a transaction document to expenses. Provided date should be a JS Date
     async addExpense(category, date, amount, note) {
+        amount = Math.round(amount * 100, 2)
+
         const transaction = {
             date: date,
             amount: amount,
             note: note
         }
 
-        return await this.expenses.collection(category).doc().set(transaction)
+        this.reference.set({ total: firestore.FieldValue.increment(-amount) }, { merge: true })
+
+        return await this.expenses.collection(category).doc().set(transaction, { merge: true })
     }
 
     // Modifies income transaction in a given category and gives it new data
     async modifyIncome(category, transactionID, newData) {
-        return await this.income.collection(category).doc(transactionID).set(newData)
+        const transaction = await this.income.collection(category).doc(transactionID).get()
+        if (transaction.exists) {
+            let change = newData.amount = Math.round(newData.amount * 100, 2)
+
+            if (change != undefined) {
+                change -= transaction.data().amount
+                this.reference.set({ total: firestore.FieldValue.increment(change) }, { merge: true })
+            }
+        }
+
+        return await this.income.collection(category).doc(transactionID).set(newData, { merge: true })
     }
 
     // Modifies expense transaction in a given category and gives it new data
     async modifyExpense(category, transactionID, newData) {
-        return await this.expenses.collection(category).doc(transactionID).set(newData)
+        const transaction = await this.expenses.collection(category).doc(transactionID).get()
+        if (transaction.exists) {
+            let change = newData.amount = Math.round(newData.amount * 100, 2)
+
+            if (change != undefined) {
+                change -= transaction.data().amount
+                this.reference.set({ total: firestore.FieldValue.increment(-change) }, { merge: true })
+            }
+        }
+
+        return await this.expenses.collection(category).doc(transactionID).set(newData, { merge: true })
     }
 
     // Removes income transaction in a given category
@@ -112,7 +143,7 @@ class User {
             note: note
         }
 
-        return await this.savings.doc(name).set(goal)
+        return await this.savings.doc(name).set(goal, { merge: true })
     }
 
     // Adds a savings goal document to expenses. Date should be a JS Date
@@ -124,17 +155,16 @@ class User {
             note: note
         }
 
-        return await this.savings.doc(name).set(goal)
+        return await this.savings.doc(name).set(goal, { merge: true })
     }
 
     // Modifies goal in a given category and gives it new data
     async modifyGoal(category, name, newData) {
-        if (category == "savings") {
-            return await this.savings.doc(name).set(newData)
-        }
-        else if (category == "amortizations") {
-            return await this.savings.doc(name).set(newData)
-        }
+        if (category == "savings")
+            return await this.savings.doc(name).set(newData, { merge: true })
+
+        if (category == "amortizations")
+            return await this.savings.doc(name).set(newData, { merge: true })
     }
 
     // Recursively deletes the specified document reference
@@ -173,7 +203,7 @@ class User {
             amount: amount,
             note: note
         }
-        this.savings.doc(goal).collection("changes").doc().set(data)
+        this.savings.doc(goal).collection("changes").doc().set(data, { merge: true })
         this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(amount) })
     }
 
@@ -184,14 +214,14 @@ class User {
             amount: amount,
             note: note
         }
-        this.amortizations.doc(goal).collection("changes").doc().set(data)
+        this.amortizations.doc(goal).collection("changes").doc().set(data, { merge: true })
         this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(amount) })
     }
 
     // Modifies a savings transaction which contributes to a goal.
     // NOT INTENDED TO MODIFY TRANSACTION AMOUNT, MAY CAUSE UNEXPECTED PROBLEMS
     async modifySavingsTransaction(goal, transactionID, newData) {
-        this.savings.doc(goal).collection("changes").doc(transactionID).set(newData)
+        this.savings.doc(goal).collection("changes").doc(transactionID).set(newData, { merge: true })
         let transaction = await this.savings.doc(goal).collection("changes").doc(transactionID).get()
         let change = newData.amount
         if (transaction.exists) {
@@ -200,7 +230,7 @@ class User {
                 this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
             }
         }
-        this.savings.doc(goal).collection("changes").doc(transactionID).set(newData)
+        this.savings.doc(goal).collection("changes").doc(transactionID).set(newData, { merge: true })
     }
 
     // Modifies an amortizations transaction which contributes to a goal.
@@ -214,7 +244,7 @@ class User {
                 this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
             }
         }
-        this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData)
+        this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData, { merge: true })
     }
 
     // Removes a savings transaction which contributes to a goal
@@ -239,12 +269,12 @@ class User {
             current: 0,
             note: note
         }
-        this.nmt.collection("items").doc(name).set(data)
+        this.nmt.collection("items").doc(name).set(data, { merge: true })
     }
 
     // Modifies an NMT item
     async modifyNMT(name, newData) {
-        this.nmt.collection("items").doc(name).set(newData)
+        this.nmt.collection("items").doc(name).set(newData, { merge: true })
     }
 
     // Deletes an NFT item recursively
@@ -260,7 +290,7 @@ class User {
             note: note
         }
         this.nmt.collection("items").doc(nmt).update({ "current": firestore.FieldValue.increment(amount) })
-        this.nmt.collection("items").doc(nmt).collection("changes").doc().set(data)
+        this.nmt.collection("items").doc(nmt).collection("changes").doc().set(data, { merge: true })
     }
 
     // Modifies a transaction for a specified NMT
@@ -273,7 +303,7 @@ class User {
                 this.nmt.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
             }
         }
-        this.nmt.doc(nmt).collection("changes").doc(transactionID).set(newData)
+        this.nmt.doc(nmt).collection("changes").doc(transactionID).set(newData, { merge: true })
     }
 
     // Deletes a transaction for a specified NMT
