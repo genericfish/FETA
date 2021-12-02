@@ -96,11 +96,23 @@ class User {
 
     // Removes income transaction in a given category
     async removeIncome(category, transactionID) {
+        const transaction = await this.income.collection(category).doc(transactionID).get()
+        let change = transaction.data().amount
+
+        if (change != undefined)
+            this.reference.set({ total: firestore.FieldValue.increment(-change) }, { merge: true })
+
         return await this.income.collection(category).doc(transactionID).delete()
     }
 
     // Removes expense transaction in a given category
     async removeExpense(category, transactionID) {
+        const transaction = await this.expenses.collection(category).doc(transactionID).get()
+        let change = transaction.data().amount
+
+        if (change != undefined)
+            this.reference.set({ total: firestore.FieldValue.increment(change) }, { merge: true })
+
         return await this.expenses.collection(category).doc(transactionID).delete()
     }
 
