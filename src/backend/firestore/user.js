@@ -36,15 +36,14 @@ class User {
     }
 
     async #updateTotals(delta) {
-        await this.reference.set({ total: firestore.FieldValue.increment(delta) }, { merge: true })
+        this.reference.set({ total: firestore.FieldValue.increment(delta) }, { merge: true }).then(_ => {
+            this.reference.get().then(ref => {
+                const { total } = ref.data()
 
-        this.reference.get().then(ref => {
-            const total = new Money(ref.data().total).Display;
-
-            if (total < 0)
-                Gmail.send(this.email, "You're broke", `The total amount across all your accounts is ${total}.`)
+                if (total < 0)
+                    Gmail.send(this.email, "You're broke", `The total amount across all your accounts is ${new Money(total).Display}.`)
+            })
         })
-
     }
 
     // Adds a transaction document to income. Provided date should be a JS Date
