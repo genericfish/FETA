@@ -49,7 +49,7 @@ class User {
 
     // Adds a transaction document to income. Provided date should be a JS Date
     async addIncome(category, date, amount, note) {
-        amount = Undisplay(amount)
+        amount = new Money(amount).Undisplay
 
         const transaction = {
             date: date,
@@ -64,7 +64,7 @@ class User {
 
     // Adds a transaction document to expenses. Provided date should be a JS Date
     async addExpense(category, date, amount, note) {
-        amount = Undisplay(amount)
+        amount = new Money(amount).Undisplay
 
         const transaction = {
             date: date,
@@ -81,7 +81,7 @@ class User {
     async modifyIncome(category, transactionID, newData) {
         const transaction = await this.income.collection(category).doc(transactionID).get()
         if (transaction.exists) {
-            let change = newData.amount = Undisplay(newData.amount)
+            let change = newData.amount = new Money(newData.amount).Undisplay
 
             if (change != undefined) {
                 change -= transaction.data().amount
@@ -96,7 +96,7 @@ class User {
     async modifyExpense(category, transactionID, newData) {
         const transaction = await this.expenses.collection(category).doc(transactionID).get()
         if (transaction.exists) {
-            let change = newData.amount = Undisplay(newData.amount)
+            let change = newData.amount = new Money(newData.amount).Undisplay
 
             if (change != undefined) {
                 change -= transaction.data().amount
