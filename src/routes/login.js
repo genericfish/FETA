@@ -9,6 +9,9 @@ const { Database } = require(path.join(__basedir, "backend", "firestore"))
 module.exports = view => {
     router
         .get("/", (req, res) => {
+            if (req.session.loggedIn == true)
+                return res.redirect("/dashboard")
+
             const render = view({
                 header: "Login",
                 error: req.session.error
@@ -35,9 +38,7 @@ module.exports = view => {
                 req.session.loggedIn = true
                 req.session.email = email
 
-                req.session.save(_ => {
-                    res.redirect("/dashboard")
-                })
+                req.session.save(_ => res.redirect("/dashboard"))
             } else {
                 req.session.error = "Invalid email or password"
                 return req.session.save(_ => res.redirect("/login"))

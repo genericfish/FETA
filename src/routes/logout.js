@@ -3,9 +3,12 @@
 const express = require("express")
 const router = express.Router()
 
-module.exports = view => {
+module.exports = _ => {
     router.get("/", (req, res) => {
-        req.session.destroy(err => res.redirect("/"))
+        if (req.session.loggedIn !== true)
+            return res.redirect("/")
+
+        req.session.destroy(_ => res.redirect("/"))
     })
 
     return router

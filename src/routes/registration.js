@@ -9,6 +9,9 @@ const { Database } = require(path.join(__basedir, "backend", "firestore"))
 module.exports = view => {
     router
         .get("/", (req, res) => {
+            if (req.session.loggedIn == true)
+                return res.redirect("/dashboard")
+
             const render = view({
                 header: "Registration",
                 error: req.session.error
@@ -30,16 +33,19 @@ module.exports = view => {
             }
 
             // Check to see if email already exists
-            if (await Database.userExists(req.body.email))
+            if (await Database.userExists(email))
                 return res.redirect("/")
 
             // Check to see if passwords match
-            if (req.body.password != req.body.confirm)
+            if (password != confirm)
                 return res.redirect("/registration")
 
-            Database.addUser(req.body.email, req.body.password)
+            Database.addUser(email, firstname, lastname, password)
 
-            return res.redirect("/dashboard")
+            req.session.loggedIn = true
+            req.session.email = email
+
+            return req.session.save(_ => res.redirect("/dashboard"))
         })
 
     return router

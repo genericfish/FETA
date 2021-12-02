@@ -8,45 +8,46 @@ const router = express.Router()
 module.exports = view => {
     router
         .get("/", async (req, res) => {
-            if (req.session.loggedIn == undefined || req.session.loggedIn == false) {
+            if (req.session.loggedIn !== true)
                 return res.redirect("/login")
-            } else {
-                const user = new User(req.session.email)
-                let income_categories = await user.getIncomeCategories()
-                let expense_categories = await user.getExpensesCategories()
-                let a = []
-                for (let i = 0; i < income_categories.length; i++) {
-                    let income_array = await user.getIncomeTransactions(income_categories[i].id)
-                    for (let j = 0; j < income_array.length; j++) {
-                        let income = income_array[j].data().amount
-                        let date = income_array[j].data().date.toDate().toDateString()
-                        let note = income_array[j].data().note
-                        let category = income_categories[i].id
-                        let id = income_array[j].id
-                        a.push([id, "income", income, date, note, category])
-                    }
-                }
 
-                for (let i = 0; i < expense_categories.length; i++) {
-                    let expense_array = await user.getExpensesTransactions(expense_categories[i].id)
-                    for (let j = 0; j < expense_array.length; j++) {
-                        let expense = -expense_array[j].data().amount
-                        let date = expense_array[j].data().date.toDate().toDateString()
-                        let note = expense_array[j].data().note
-                        let category = expense_categories[i].id
-                        let id = expense_array[j].id
-                        a.push([id, "expense", expense, date, note, category])
-                    }
+            const user = new User(req.session.email)
+            let income_categories = await user.getIncomeCategories()
+            let expense_categories = await user.getExpensesCategories()
+            let a = []
+            for (let i = 0; i < income_categories.length; i++) {
+                let income_array = await user.getIncomeTransactions(income_categories[i].id)
+                for (let j = 0; j < income_array.length; j++) {
+                    let income = income_array[j].data().amount
+                    let date = income_array[j].data().date.toDate().toDateString()
+                    let note = income_array[j].data().note
+                    let category = income_categories[i].id
+                    let id = income_array[j].id
+                    a.push([id, "income", income, date, note, category])
                 }
-                a.sort(function (a, b) { return b[3] - a[3] })
-                res.send(view({
-                    header: "Transactions",
-                    transactions: a
-                }))
             }
 
+            for (let i = 0; i < expense_categories.length; i++) {
+                let expense_array = await user.getExpensesTransactions(expense_categories[i].id)
+                for (let j = 0; j < expense_array.length; j++) {
+                    let expense = -expense_array[j].data().amount
+                    let date = expense_array[j].data().date.toDate().toDateString()
+                    let note = expense_array[j].data().note
+                    let category = expense_categories[i].id
+                    let id = expense_array[j].id
+                    a.push([id, "expense", expense, date, note, category])
+                }
+            }
+            a.sort(function (a, b) { return b[3] - a[3] })
+            res.send(view({
+                header: "Transactions",
+                transactions: a
+            }))
         })
         .post("/add", async (req, res) => {
+            if (req.session.loggedIn !== true)
+                return res.redirect("/login")
+
             const { type, category, amount, date, note } = req.body
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
@@ -55,8 +56,6 @@ module.exports = view => {
                 req.session.error = "Please fill out all fields"
                 return req.session.save(_ => res.redirect("/transaction"))
             }
-
-            //not working 
 
             if (req.body.type.toLowerCase() == "income") {
                 await user.addIncome(req.body.category, new Date(req.body.date), parseInt(req.body.amount), req.body.note)
@@ -70,6 +69,9 @@ module.exports = view => {
             return res.redirect("/transaction")
         })
         .post("/remove", async (req, res) => {
+            if (req.session.loggedIn !== true)
+                return res.redirect("/login")
+
             const { ID, type, category } = req.body
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
@@ -88,6 +90,9 @@ module.exports = view => {
             return res.redirect("/transaction")
         })
         .post("/edit", async (req, res) => {
+            if (req.session.loggedIn !== true)
+                return res.redirect("/login")
+
             const { ID, type, category, date, amount } = req.body
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
