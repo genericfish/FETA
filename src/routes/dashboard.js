@@ -3,6 +3,7 @@
 const express = require("express")
 const path = require("path")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
+const { Display } = require(path.join(__basedir, "backend", "money"))
 const router = express.Router()
 
 module.exports = view => {
@@ -21,7 +22,7 @@ module.exports = view => {
                 let income_array = await user.getIncomeTransactions(income_categories[i].id)
                 for (let j = 0; j < income_array.length; j++) {
                     let income_amount = income_array[j].data().amount
-                    income_sum += income_amount
+                    income_sum += Display(income_amount)
                 }
 
             }
@@ -29,7 +30,7 @@ module.exports = view => {
                 let expense_array = await user.getExpensesTransactions(expense_categories[i].id)
                 for (let j = 0; j < expense_array.length; j++) {
                     let expense_amount = expense_array[j].data().amount
-                    expense_sum += expense_amount
+                    expense_sum += Display(expense_amount)
                 }
             }
             net = income_sum - expense_sum
@@ -53,7 +54,7 @@ module.exports = view => {
             if (req.session.loggedIn !== true)
                 return res.redirect("/login")
 
-            const { type, category, amount, date, note } = req.body;
+            const { type, category, amount, date, note } = req.body
 
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)

@@ -4,6 +4,7 @@ const path = require("path")
 const { firestore } = require("firebase-admin")
 const { Database } = require("./")
 const { Gmail } = require(path.join(__basedir, "backend", "gmail"))
+const { Undisplay } = require(path.join(__basedir, "backend", "money"))
 
 class User {
     constructor(email) {
@@ -36,7 +37,7 @@ class User {
 
     // Adds a transaction document to income. Provided date should be a JS Date
     async addIncome(category, date, amount, note) {
-        amount = Math.round(amount * 100, 2)
+        amount = Undisplay(amount)
 
         const transaction = {
             date: date,
@@ -51,7 +52,7 @@ class User {
 
     // Adds a transaction document to expenses. Provided date should be a JS Date
     async addExpense(category, date, amount, note) {
-        amount = Math.round(amount * 100, 2)
+        amount = Undisplay(amount)
 
         const transaction = {
             date: date,
@@ -68,7 +69,7 @@ class User {
     async modifyIncome(category, transactionID, newData) {
         const transaction = await this.income.collection(category).doc(transactionID).get()
         if (transaction.exists) {
-            let change = newData.amount = Math.round(newData.amount * 100, 2)
+            let change = newData.amount = Undisplay(newData.amount)
 
             if (change != undefined) {
                 change -= transaction.data().amount
@@ -83,7 +84,7 @@ class User {
     async modifyExpense(category, transactionID, newData) {
         const transaction = await this.expenses.collection(category).doc(transactionID).get()
         if (transaction.exists) {
-            let change = newData.amount = Math.round(newData.amount * 100, 2)
+            let change = newData.amount = Undisplay(newData.amount)
 
             if (change != undefined) {
                 change -= transaction.data().amount

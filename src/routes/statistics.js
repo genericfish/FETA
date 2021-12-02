@@ -3,6 +3,7 @@
 const express = require("express")
 const path = require("path")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
+const { Display } = require(path.join(__basedir, "backend", "money"))
 const router = express.Router()
 
 module.exports = view => {
@@ -23,8 +24,8 @@ module.exports = view => {
             let income = 0
             for (let j = 0; j < income_array.length; j++) {
                 let income_amount = income_array[j].data().amount
-                income_sum += income_amount
-                income += income_amount
+                income_sum += Display(income_amount)
+                income += Display(income_amount)
             }
             a.push([income_categories[i].id, income])
 
@@ -34,8 +35,8 @@ module.exports = view => {
             let expense = 0
             for (let j = 0; j < expense_array.length; j++) {
                 let expense_amount = expense_array[j].data().amount
-                expense_sum += expense_amount
-                expense += expense_amount
+                expense_sum += Display(expense_amount)
+                expense += Display(expense_amount)
             }
             b.push([expense_categories[i].id, expense])
         }
