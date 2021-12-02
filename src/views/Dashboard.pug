@@ -4,7 +4,6 @@ block content
   include templates/nav.pug
   .dashboard-page 
     h1="Dashboard"
-    include templates/toggle.pug
     form(class="add-transaction-form" action="/dashboard/add" method="post")
       input(type="text" name="type" placeholder="income or expense")
       input(type="text" name="category" placeholder="category")
@@ -15,3 +14,20 @@ block content
 
     h3="Your Net Saving is "+net 
     h5=message
+
+    // Scripts
+    script(src='js/jquery.min.js')
+    // jQuery for Bootstrap's JavaScript plugins
+    script(src='js/popper.min.js')
+    // Popper tooltip library for Bootstrap
+    script(src='js/bootstrap.min.js')
+    // Bootstrap framework
+    script(src='js/jquery.easing.min.js')
+    // jQuery Easing for smooth scrolling between anchors
+    script(src='js/swiper.min.js')
+    // Swiper for image and text sliders
+    script(src='js/jquery.magnific-popup.js')
+    // Magnific Popup for lightboxes
+    script(src='js/validator.min.js')
+    // Validator.js - Bootstrap plugin that validates forms
+    script(src='js/scripts.js')

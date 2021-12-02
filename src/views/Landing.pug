@@ -1,6 +1,5 @@
 
 //-doctype html
-.landing-page
 head
   meta(charset='utf-8')
   meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
@@ -51,10 +50,10 @@ nav.navbar.navbar-expand-lg.navbar-dark.navbar-custom.fixed-top
     // end of mobile menu toggle button
     #navbarsExampleDefault.collapse.navbar-collapse
       ul.navbar-nav.ml-auto
-        li.nav-item
-          a.nav-link.page-scroll(href='')
-            | HOME 
-            span.sr-only (current)
+        //- li.nav-item
+        //-   a.nav-link.page-scroll(href='')
+        //-     | HOME 
+        //-     span.sr-only (current)
         //- li.nav-item
         //-   a.nav-link.page-scroll(href='#features') FEATURES
         //- li.nav-item
@@ -76,6 +75,8 @@ nav.navbar.navbar-expand-lg.navbar-dark.navbar-custom.fixed-top
           //a.nav-link.page-scroll(href='#pricing') PRICING
       span.nav-item
         a.btn-outline-sm(href='LogIn') LOG IN
+      span.nav-item
+        a.btn-outline-sm(href='registration') SIGN UP
   // end of container
 // end of navbar
 // end of navigation
@@ -113,17 +114,21 @@ header#header.header
           .swiper-container.image-slider
             .swiper-wrapper
               .swiper-slide
-                img.img-fluid(src='images/customer-logo-1.png' alt='alternative')
+                h3="Feier Chen"
+                //-img.img-fluid(src='images/customer-logo-1.png' alt='alternative')
               .swiper-slide
-                img.img-fluid(src='images/customer-logo-2.png' alt='alternative')
+                h3="Brandon Nguyen"
+                //-img.img-fluid(src='images/customer-logo-2.png' alt='alternative')
               .swiper-slide
-                img.img-fluid(src='images/customer-logo-3.png' alt='alternative')
+                h3="Kornel Harmati"
+                //-img.img-fluid(src='images/customer-logo-3.png' alt='alternative')
               .swiper-slide
-                img.img-fluid(src='images/customer-logo-4.png' alt='alternative')
-              .swiper-slide
-                img.img-fluid(src='images/customer-logo-5.png' alt='alternative')
-              .swiper-slide
-                img.img-fluid(src='images/customer-logo-6.png' alt='alternative')
+                h3="Keegan Choudhury"
+                //-img.img-fluid(src='images/customer-logo-4.png' alt='alternative')
+              //- .swiper-slide
+              //-   img.img-fluid(src='images/customer-logo-5.png' alt='alternative')
+              //- .swiper-slide
+              //-   img.img-fluid(src='images/customer-logo-6.png' alt='alternative')
             // end of swiper-wrapper
           // end of swiper container
         // end of slider-container
@@ -231,7 +236,7 @@ header#header.header
                     li.media
                       i.fas.fa-square
                       .media-body Add and remove subscribers using the control panel
-                  a.btn-solid-reg.popup-with-move-anim(href='#details-lightbox-1') LIGHTBOX
+                  //-a.btn-solid-reg.popup-with-move-anim(href='#details-lightbox-1') LIGHTBOX
                 // end of text-container
               // end of col
             // end of row

@@ -4,7 +4,6 @@ block content
   include templates/nav.pug
   .transaction-page
     h1="Transaction"
-    include templates/toggle.pug
 
     form(class="add-transaction-form" action="/transaction/add" method="post")
       input(type="text" name="type" placeholder="income or expense")
