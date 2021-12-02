@@ -13,11 +13,11 @@ block content
       input(type="note" name="note" placeholder="note")
       input(type="submit" value="Add Transaction")
 
-    table 
+    table.table
       each transaction,idx in transactions 
         tr 
           each field, index in transaction
-            if index > 1
+            if index > 1 && index < 6
               td=field
           td
             form(class="remove-transaction-form" action="/transaction/remove" method="post")

@@ -24,7 +24,7 @@ module.exports = view => {
                     let note = income_array[j].data().note
                     let category = income_categories[i].id
                     let id = income_array[j].id
-                    a.push([id, "income", new Money(income).Display, date, note, category])
+                    a.push([id, "income", new Money(income).Display, date, note, category, income_array[j].data().date])
                 }
             }
 
@@ -36,10 +36,10 @@ module.exports = view => {
                     let note = expense_array[j].data().note
                     let category = expense_categories[i].id
                     let id = expense_array[j].id
-                    a.push([id, "expense", new Money(expense).Display, date, note, category])
+                    a.push([id, "expense", new Money(expense).Display, date, note, category, expense_array[j].data().date])
                 }
             }
-            a.sort(function (a, b) { return b[3] - a[3] })
+            a.sort(function (a, b) { return b[6] - a[6] })
             res.send(view({
                 header: "Transactions",
                 transactions: a

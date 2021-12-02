@@ -13,16 +13,20 @@ block content
     h3="Your Net Expense is "+expense_sum
 
     h3="Your Incomes"
-    table 
+    table.table
       each income in incomes
-        tr=income 
+        tr
+          each column in income
+            td=column 
       else 
         tr No incomes 
 
     h3="Your Expenses"
-    table
+    table.table
       each expense in expenses
-        tr=expense 
+        tr
+          each column in expense
+            td=column
       else 
         tr No expenses
 
