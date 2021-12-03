@@ -29,6 +29,41 @@ block content
             td=column
       else 
         tr No expenses
+    
+    .pie-chart
+      h3="Income"
+      script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
+      script(type='text/javascript').
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawIncomeChart);
+        function drawIncomeChart() {
+          const incomes = !{JSON.stringify(incomes)}
+        var data = google.visualization.arrayToDataTable([["Category", "Amount"],...incomes]);
+        var options = {
+        pieHole: 0.4,
+        backgroundColor: 'transparent',
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('incomechart'));
+        chart.draw(data, options);
+        }
+      #incomechart(style='width: 900px; height: 500px;')
+
+      h3="Expense"  
+
+      script(type='text/javascript').
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawExpenseChart);
+        function drawExpenseChart() {
+          const expenses = !{JSON.stringify(expenses)}
+        var data = google.visualization.arrayToDataTable([["Category", "Amount"],...expenses]);
+        var options = {
+        pieHole: 0.4,
+        backgroundColor: 'transparent',
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('expensechart'));
+        chart.draw(data, options);
+        }
+      #expensechart(style='width: 900px; height: 500px;')
 
     
 

@@ -567,3 +567,7 @@ a:hover.back-to-top {
 	background-color: #047c40; 
 }
 
+.statistics-page .pie-chart {
+  align-items: center;
+  margin: 0 auto;
+}
