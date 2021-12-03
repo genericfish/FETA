@@ -20,18 +20,28 @@ block content
             if index > 1 && index < 6
               td=field
           td
-            form(class="remove-transaction-form" action="/transaction/remove" method="post")
-              input(type="hidden" name="ID" value=transaction[0])
-              input(type="hidden" name="type" value=transaction[1])
-              input(type="hidden" name="category" value=transaction[5])
-              input(type="submit" value="Remove")
-          td
-            button(type="button" class="btn btn-primary" data-toggle="modal" data-target=`#exampleModal${idx}`) Edit
-            .modal.fade(id=`exampleModal${idx}` tabIndex="-1" role="dialog" aria-hidden="true" aria-labelledby=`exampleModalLabel${idx}`)
+            button(type="button" class="btn btn-primary" data-toggle="modal" data-target=`#deleteModal${idx}`) Remove
+            .modal.fade(id=`deleteModal${idx}` tabIndex="-1" role="dialog" aria-hidden="true" aria-labelledby=`deleteModalLabel${idx}`)
               .modal-dialog(role="document")
                 .modal-content
                   .modal-header
-                    h5(class="modal-title" id="exampleModalLabel") Edit Transaction
+                    h5(class="modal-title" id="deleteModalLabel") Remove Transaction
+                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                      span(aria-hidden="true") &times;
+                  .modal-body
+                    h3="Are you sure?"
+                    form(class="remove-transaction-form" action="/transaction/remove" method="post")
+                      input(type="hidden" name="ID" value=transaction[0])
+                      input(type="hidden" name="type" value=transaction[1])
+                      input(type="hidden" name="category" value=transaction[5])
+                      input(type="submit" value="Remove")
+          td
+            button(type="button" class="btn btn-primary" data-toggle="modal" data-target=`#editModal${idx}`) Edit
+            .modal.fade(id=`editModal${idx}` tabIndex="-1" role="dialog" aria-hidden="true" aria-labelledby=`editModalLabel${idx}`)
+              .modal-dialog(role="document")
+                .modal-content
+                  .modal-header
+                    h5(class="modal-title" id="editModalLabel") Edit Transaction
                     button(type="button" class="close" data-dismiss="modal" aria-label="Close")
                       span(aria-hidden="true") &times;
                   .modal-body
