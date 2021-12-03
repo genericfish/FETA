@@ -389,6 +389,62 @@ class User {
 
         return dailyTotals;
     }
+
+    async getMonthlyAggregate() {
+        const begin = new Date()
+        const end = new Date()
+
+        begin.setDate(begin.getDate() - 30)
+
+        begin.setHours(0)
+        begin.setMinutes(0)
+        begin.setSeconds(0)
+        begin.setMilliseconds(0)
+
+        end.setHours(23)
+        end.setMinutes(59)
+        end.setSeconds(59)
+        end.setMilliseconds(999)
+
+        let income = await this.getIncomeCategories()
+        let expense = await this.getExpensesCategories()
+
+        let totalIncome = 0
+        let totalExpense = 0
+
+        const userData = await this.reference.get()
+        let { total } = userData.data()
+
+        for (let category of income) {
+            let transactions = await this.getIncomeTransactions(category.id, begin)
+
+            transactions.forEach(transaction => {
+                const { amount, date } = transaction.data()
+
+                if (date.toDate() <= end)
+                    totalIncome += amount
+                else
+                    total -= amount
+            })
+        }
+
+        for (let category of expense) {
+            let transactions = await this.getExpensesTransactions(category.id, begin)
+
+            transactions.forEach(transaction => {
+                const { amount, date } = transaction.data()
+
+                if (date.toDate() <= end)
+                    totalExpense += amount
+                else
+                    total += amount
+            })
+        }
+
+        const prevTotal = total - totalIncome + totalExpense
+
+        return [total, prevTotal];
+    }
 }
 
 module.exports = { User: User }
