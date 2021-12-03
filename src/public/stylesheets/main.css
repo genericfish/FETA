@@ -548,7 +548,6 @@ a.white {
 	text-decoration: none;
 }
 
-.dashboard-page
 a.back-to-top {
 	position: fixed;
 	z-index: 999;
@@ -562,12 +561,17 @@ a.back-to-top {
 	background-size: 1.125rem 1.125rem;
 	text-indent: -9999px;
 }
-.dashboard-page
+
 a:hover.back-to-top {
 	background-color: #047c40; 
 }
 
 .statistics-page .pie-chart {
+  align-items: center;
+  margin: 0 auto;
+}
+
+.dashboard-page .bar-graph {
   align-items: center;
   margin: 0 auto;
 }

@@ -15,19 +15,38 @@ block content
     h3="Your Net Saving is "+net 
     h5=message
 
-    // Scripts
-    script(src='js/jquery.min.js')
-    // jQuery for Bootstrap's JavaScript plugins
-    script(src='js/popper.min.js')
-    // Popper tooltip library for Bootstrap
-    script(src='js/bootstrap.min.js')
-    // Bootstrap framework
-    script(src='js/jquery.easing.min.js')
-    // jQuery Easing for smooth scrolling between anchors
-    script(src='js/swiper.min.js')
-    // Swiper for image and text sliders
-    script(src='js/jquery.magnific-popup.js')
-    // Magnific Popup for lightboxes
-    script(src='js/validator.min.js')
-    // Validator.js - Bootstrap plugin that validates forms
-    script(src='js/scripts.js')
+    h3="Your monthly gain is "+gain 
+    if percent_gain
+      h3="You gained "+percent_gain+"%"
+
+    .bar-graph
+      script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
+      script(type='text/javascript').
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+          const total = !{JSON.stringify(total)}
+        var data = google.visualization.arrayToDataTable(total);
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1,
+        { calc: "stringify",
+        sourceColumn: 1,
+        type: "string",
+        role: "annotation" },
+        2]);
+        var options = {
+        backgroundColor: 'transparent',
+        title: "Monthly Totals",
+        width: 600,
+        height: 400,
+        bar: {groupWidth: "95%"},
+        legend: { position: "none" },
+        };
+        var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
+        chart.draw(view, options);
+        }
+      #barchart_values(style='width: 900px; height: 300px;')
+    
+        
+
+  

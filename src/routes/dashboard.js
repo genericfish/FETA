@@ -2,6 +2,7 @@
 
 const express = require("express")
 const path = require("path")
+const { start } = require("repl")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
 const { Money } = require(path.join(__basedir, "backend", "money"))
 const router = express.Router()
@@ -42,12 +43,26 @@ module.exports = view => {
             } else {
                 message = "Good Job!"
             }
+
+            let total = await user.getMonthlyAggregate()
+            let total_table = [["time", "amount", { role: "style" }], ["Start Balance", total[1]/100, "red"], ["End Balance", total[0]/100, "blue"]]
+            let end_balance = total[0]
+            let start_balance = total[1]
+            let gain = end_balance - start_balance
+            let percent_gain = (gain/start_balance)*100
+            if (start_balance==0) 
+                percent_gain = undefined
+            
+
             res.send(view({
                 header: "Dashboard",
                 income_sum: new Money(income_sum).Display,
                 expense_sum: new Money(expense_sum).Display,
                 net: new Money(net).Display,
-                message: message
+                message: message,
+                total: total_table,
+                gain: new Money(gain).Display,
+                percent_gain: percent_gain
             }))
         })
         .post("/add", async (req, res) => {
