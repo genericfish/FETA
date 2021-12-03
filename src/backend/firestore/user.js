@@ -338,6 +338,10 @@ class User {
         this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(-change) })
     }
 
+    async getNMTTransactions(item){
+        return await this.nmt.collection("items").doc(item).collection("changes").get().docs
+    }
+
     async getMonthlyTransactions() {
         const today = new Date()
         let dailyTotals = []
