@@ -13,11 +13,62 @@ block content
       input(type="submit" value="Add Transaction")
 
     h3="Your Net Saving is "+net 
-    h5=message
+    h1=message
 
     h3="Your monthly gain is "+gain 
     if percent_gain
       h3="You gained "+percent_gain+"%"
+    
+    h3="Your Transactions this Month"
+
+    table.table
+      thead 
+        th="Amount"
+        th="Date" 
+        th="Note"
+        th="Category"
+      each transaction,idx in transactions 
+        tr 
+          each field, index in transaction
+            if index > 1 && index < 6
+              td=field
+      else 
+        tr No transactions
+
+    .pie-chart
+      h3="Income"
+      script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
+      script(type='text/javascript').
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawIncomeChart);
+        function drawIncomeChart() {
+          const incomes = !{JSON.stringify(incomes)}
+        var data = google.visualization.arrayToDataTable([["Category", "Amount"],...incomes]);
+        var options = {
+        pieHole: 0.4,
+        backgroundColor: 'transparent',
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('incomechart'));
+        chart.draw(data, options);
+        }
+      #incomechart(style='width: 900px; height: 500px;')
+
+      h3="Expense"  
+
+      script(type='text/javascript').
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawExpenseChart);
+        function drawExpenseChart() {
+          const expenses = !{JSON.stringify(expenses)}
+        var data = google.visualization.arrayToDataTable([["Category", "Amount"],...expenses]);
+        var options = {
+        pieHole: 0.4,
+        backgroundColor: 'transparent',
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('expensechart'));
+        chart.draw(data, options);
+        }
+      #expensechart(style='width: 900px; height: 500px;')
 
     .bar-graph
       script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')

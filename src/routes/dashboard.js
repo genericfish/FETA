@@ -2,9 +2,8 @@
 
 const express = require("express")
 const path = require("path")
-const { start } = require("repl")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
-const { Money } = require(path.join(__basedir, "backend", "utils"))
+const { Money, getLastMonth } = require(path.join(__basedir, "backend", "utils"))
 const router = express.Router()
 
 module.exports = view => {
@@ -52,7 +51,54 @@ module.exports = view => {
             let percent_gain = (gain/start_balance)*100
             if (start_balance==0) 
                 percent_gain = undefined
+
+            let a=[]
+            for (let i = 0; i < income_categories.length; i++) {
+                let income_array = await user.getIncomeTransactions(income_categories[i].id, getLastMonth(), new Date())
+                for (let j = 0; j < income_array.length; j++) {
+                    let income = income_array[j].data().amount
+                    let date = income_array[j].data().date.toDate().toDateString()
+                    let note = income_array[j].data().note
+                    let category = income_categories[i].id
+                    let id = income_array[j].id
+                    a.push([id, "income", new Money(income).Display, date, note, category, income_array[j].data().date])
+                }
+            }
             
+            for (let i = 0; i < expense_categories.length; i++) {
+                let expense_array = await user.getExpensesTransactions(expense_categories[i].id, getLastMonth(), new Date())
+                for (let j = 0; j < expense_array.length; j++) {
+                    let expense = -expense_array[j].data().amount
+                    let date = expense_array[j].data().date.toDate().toDateString()
+                    let note = expense_array[j].data().note
+                    let category = expense_categories[i].id
+                    let id = expense_array[j].id
+                    a.push([id, "expense", new Money(expense).Display, date, note, category, expense_array[j].data().date])
+                }
+            }
+            a.sort(function (a, b) { return b[6] - a[6]})
+
+            let b = []
+            let c = []
+            for (let i = 0; i < income_categories.length; i++) {
+                let income_array = await user.getIncomeTransactions(income_categories[i].id, getLastMonth(), new Date())
+                let income = 0
+                for (let j = 0; j < income_array.length; j++) {
+                    let income_amount = income_array[j].data().amount
+                    income += income_amount
+                }
+                b.push([income_categories[i].id, income])
+
+            }
+            for (let i = 0; i < expense_categories.length; i++) {
+                let expense_array = await user.getExpensesTransactions(expense_categories[i].id, getLastMonth(), new Date())
+                let expense = 0
+                for (let j = 0; j < expense_array.length; j++) {
+                    let expense_amount = expense_array[j].data().amount
+                    expense += expense_amount
+                }
+                c.push([expense_categories[i].id, expense])
+            }
 
             res.send(view({
                 header: "Dashboard",
@@ -62,7 +108,10 @@ module.exports = view => {
                 message: message,
                 total: total_table,
                 gain: new Money(gain).Display,
-                percent_gain: percent_gain
+                percent_gain: percent_gain,
+                transactions: a,
+                incomes: b,
+                expenses: c
             }))
         })
         .post("/add", async (req, res) => {

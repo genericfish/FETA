@@ -14,6 +14,9 @@ block content
 
     h3="Your Incomes"
     table.table
+      thead 
+        th="Category"
+        th="Amount" 
       each income in incomes
         tr
           each column in income
@@ -23,6 +26,9 @@ block content
 
     h3="Your Expenses"
     table.table
+      thead 
+        th="Category"
+        th="Amount" 
       each expense in expenses
         tr
           each column in expense
