@@ -4,7 +4,7 @@ const path = require("path")
 const { firestore } = require("firebase-admin")
 const { Database } = require("./")
 const { Gmail } = require(path.join(__basedir, "backend", "gmail"))
-const { Money } = require(path.join(__basedir, "backend", "money"))
+const { Money, getLastMonth } = require(path.join(__basedir, "backend", "utils"))
 
 class User {
     constructor(email) {
@@ -391,16 +391,8 @@ class User {
     }
 
     async getMonthlyAggregate() {
-        const begin = new Date()
+        const begin = getLastMonth()
         const end = new Date()
-
-        begin.setDate(begin.getDate() - 30)
-
-        begin.setHours(0)
-        begin.setMinutes(0)
-        begin.setSeconds(0)
-        begin.setMilliseconds(0)
-
         end.setHours(23)
         end.setMinutes(59)
         end.setSeconds(59)
