@@ -443,7 +443,7 @@ class User {
 
         const prevTotal = total - totalIncome + totalExpense
 
-        return [total, prevTotal];
+        return [new Money(total).Display, new Money(prevTotal).Display];
     }
 }
 
