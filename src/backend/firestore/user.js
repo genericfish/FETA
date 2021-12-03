@@ -353,41 +353,38 @@ class User {
             begin.setHours(0)
             begin.setMinutes(0)
             begin.setSeconds(0)
+            begin.setMilliseconds(0)
 
             end.setHours(23)
             end.setMinutes(59)
             end.setSeconds(59)
+            end.setMilliseconds(999)
 
             let income = await this.getIncomeCategories()
             let expense = await this.getExpensesCategories()
 
-            let data = [begin]
+            let totalIncome = 0
+            let totalExpense = 0
 
             for (let category of income) {
                 let transactions = await this.getIncomeTransactions(category.id, begin, end)
-                let totalIncome = 0
 
                 transactions.forEach(transaction => {
                     const { amount } = transaction.data()
                     totalIncome += amount
                 })
-
-                data.push(totalIncome)
             }
 
             for (let category of expense) {
                 let transactions = await this.getExpensesTransactions(category.id, begin, end)
-                let totalIncome = 0
 
                 transactions.forEach(transaction => {
                     const { amount } = transaction.data()
-                    totalIncome += amount
+                    totalExpense += amount
                 })
-
-                data.push(totalIncome)
             }
 
-            dailyTotals.push(data)
+            dailyTotals.push([begin, totalIncome, totalExpense])
         }
 
         return dailyTotals;
