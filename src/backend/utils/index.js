@@ -21,4 +21,17 @@ class Money {
     }
 }
 
-module.exports = { Money: Money }
+function getLastMonth() {
+    const begin = new Date()
+
+    begin.setDate(begin.getDate() - 30)
+
+    begin.setHours(0)
+    begin.setMinutes(0)
+    begin.setSeconds(0)
+    begin.setMilliseconds(0)
+
+    return begin
+}
+
+module.exports = { Money: Money, getLastMonth: getLastMonth }
