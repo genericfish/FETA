@@ -337,6 +337,61 @@ class User {
         this.nmt.doc(nmt).collection("changes").doc(transactionID).delete()
         this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(-change) })
     }
+
+    async getMonthlyTransactions() {
+        const today = new Date()
+        let dailyTotals = []
+
+        for (let i = 0; i < 30; i++) {
+            const date = today.getDate() - i
+            const begin = new Date()
+            const end = new Date()
+
+            begin.setDate(date)
+            end.setDate(date)
+
+            begin.setHours(0)
+            begin.setMinutes(0)
+            begin.setSeconds(0)
+
+            end.setHours(23)
+            end.setMinutes(59)
+            end.setSeconds(59)
+
+            let income = await this.getIncomeCategories()
+            let expense = await this.getExpensesCategories()
+
+            let data = [begin]
+
+            for (let category of income) {
+                let transactions = await this.getIncomeTransactions(category.id, begin, end)
+                let totalIncome = 0
+
+                transactions.forEach(transaction => {
+                    const { amount } = transaction.data()
+                    totalIncome += amount
+                })
+
+                data.push(totalIncome)
+            }
+
+            for (let category of expense) {
+                let transactions = await this.getExpensesTransactions(category.id, begin, end)
+                let totalIncome = 0
+
+                transactions.forEach(transaction => {
+                    const { amount } = transaction.data()
+                    totalIncome += amount
+                })
+
+                data.push(totalIncome)
+            }
+
+            dailyTotals.push(data)
+        }
+
+        return dailyTotals;
+    }
 }
 
 module.exports = { User: User }
