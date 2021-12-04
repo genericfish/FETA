@@ -1,85 +1,38 @@
 
-//-doctype html
+doctype html
 head
-  meta(charset='utf-8')
-  meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
-  // SEO Meta Tags
-  meta(name='description' content='Tivo is a HTML landing page template built with Bootstrap to help you crate engaging presentations for SaaS apps and convert visitors into users.')
-  meta(name='author' content='Inovatik')
-  // OG Meta Tags to improve the way the post looks when you share the page on LinkedIn, Facebook, Google+
-  meta(property='og:site_name' content='')
-  // website name
-  meta(property='og:site' content='')
-  // website link
-  meta(property='og:title' content='')
-  // title shown in the actual shared post
-  meta(property='og:description' content='')
-  // description shown in the actual shared post
-  meta(property='og:image' content='')
-  // image link, make sure it's jpg
-  meta(property='og:url' content='')
-  // where do you want your post to link to
-  meta(property='og:type' content='article')
-  // Website Title
-  title FETA -- Financial Excellence Tracking Application 
-  // Styles
-  link(href='https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap&subset=latin-ext' rel='stylesheet')
-  link(href='stylesheets/bootstrap.css' rel='stylesheet')
-  link(href='stylesheets/fontawesome-all.css' rel='stylesheet')
-  link(href='stylesheets/swiper.css' rel='stylesheet')
-  link(href='stylesheets/magnific-popup.css' rel='stylesheet')
-  link(href='stylesheets/style.css' rel='stylesheet')
-  // Favicon
+  title FETA | #{header}
+  meta(charset="UTF-8")
+  meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+  meta(name='description' content='FETA is financial excellence. Track your assets with FETA.')
+  meta(property='og:title' content='FETA: Financial Excellence Tracking Application')
+  meta(property='og:url' content='https://feta.generic.fish/')
+  meta(property='og:type' content='website')
+
   link(rel='icon' href='images/favicon.png')
-// Preloader
-.spinner-wrapper
-  .spinner
-    .bounce1
-    .bounce2
-    .bounce3
-// end of preloader
-// Navigation
+
+  link(rel="stylesheet" href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css')
+  link(rel="stylesheet" href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css')
+  link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap&subset=latin-ext')
+  link(rel='stylesheet' href='/stylesheets/fontawesome-all.css')
+  link(rel='stylesheet' href='/stylesheets/swiper.css')
+  link(rel='stylesheet' href='/stylesheets/magnific-popup.css')
+  link(rel='stylesheet' href='/stylesheets/style.css')
+
 nav.navbar.navbar-expand-lg.navbar-dark.navbar-custom.fixed-top
   .container
     a.navbar-brand.logo-text.page-scroll(href="/")
       h1 FETA
-    // Mobile Menu Toggle Button
     button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarsExampleDefault' aria-controls='navbarsExampleDefault' aria-expanded='false' aria-label='Toggle navigation')
       span.navbar-toggler-awesome.fas.fa-bars
       span.navbar-toggler-awesome.fas.fa-times
-    // end of mobile menu toggle button
     #navbarsExampleDefault.collapse.navbar-collapse
       ul.navbar-nav.ml-auto
-        //- li.nav-item
-        //-   a.nav-link.page-scroll(href='')
-        //-     | HOME 
-        //-     span.sr-only (current)
-        //- li.nav-item
-        //-   a.nav-link.page-scroll(href='#features') FEATURES
-        //- li.nav-item
-        //-   a.nav-link.page-scroll(href='#details') DETAILS
-        //- Dropdown Menu
-        //- li.nav-item.dropdown
-        //-   a#navbarDropdown.nav-link.dropdown-toggle.page-scroll(href='#video' role='button' aria-haspopup='true' aria-expanded='false') VIDEO
-        //-   .dropdown-menu(aria-labelledby='navbarDropdown')
-        //-     a.dropdown-item(href='article-details.html')
-        //-       span.item-text ARTICLE DETAILS
-        //-     .dropdown-items-divide-hr
-        //-     a.dropdown-item(href='terms-conditions.html')
-        //-       span.item-text TERMS CONDITIONS
-        //-     .dropdown-items-divide-hr
-        //-     a.dropdown-item(href='privacy-policy.html')
-        //-       span.item-text PRIVACY POLICY
-        // end of dropdown menu
-        li.nav-item
-          //a.nav-link.page-scroll(href='#pricing') PRICING
-      span.nav-item
-        a.btn-outline-sm(href='LogIn') LOG IN
-      span.nav-item
-        a.btn-outline-sm(href='registration') SIGN UP
-  // end of container
-// end of navbar
-// end of navigation
+        span.nav-item
+          a.btn-outline-sm(href='login') LOG IN
+        span.nav-item
+          a.btn-outline-sm(href='registration') SIGN UP
 
 header#header.header
   .header-content
@@ -91,8 +44,6 @@ header#header.header
               | Financial Excellence Tracking Application
             p.p-large FETA will help your every day budgeting &amp; statistics needs!
             a.btn-solid-lg.page-scroll(href='Registration') SIGN UP
-          // end of text-container
-        // end of col
         .col-lg-6.col-xl-7
           .image-container
             .img-wrapper
@@ -103,8 +54,6 @@ header#header.header
         .cls-1{fill:#fff;}
     title header-frame
     path.cls-1(d='M0,283.054c22.75,12.98,53.1,15.2,70.635,14.808,92.115-2.077,238.3-79.9,354.895-79.938,59.97-.019,106.17,18.059,141.58,34,47.778,21.511,47.778,21.511,90,38.938,28.418,11.731,85.344,26.169,152.992,17.971,68.127-8.255,115.933-34.963,166.492-67.393,37.467-24.032,148.6-112.008,171.753-127.963,27.951-19.26,87.771-81.155,180.71-89.341,72.016-6.343,105.479,12.388,157.434,35.467,69.73,30.976,168.93,92.28,256.514,89.405,100.992-3.315,140.276-41.7,177-64.9V0.24H0V283.054Z')
-// end of header
-// Customers
 .slider-1
   .container
     .row
@@ -115,45 +64,24 @@ header#header.header
             .swiper-wrapper
               .swiper-slide
                 h3="Feier Chen"
-                //-img.img-fluid(src='images/customer-logo-1.png' alt='alternative')
               .swiper-slide
                 h3="Brandon Nguyen"
-                //-img.img-fluid(src='images/customer-logo-2.png' alt='alternative')
               .swiper-slide
                 h3="Kornel Harmati"
-                //-img.img-fluid(src='images/customer-logo-3.png' alt='alternative')
               .swiper-slide
                 h3="Keegan Choudhury"
               .swiper-slide
                 h3="Paul Taele"
               .swiper-slide
                 h3="Ravikiran Ramesh"
-                //-img.img-fluid(src='images/customer-logo-4.png' alt='alternative')
-              //- .swiper-slide
-              //-   img.img-fluid(src='images/customer-logo-5.png' alt='alternative')
-              //- .swiper-slide
-              //-   img.img-fluid(src='images/customer-logo-6.png' alt='alternative')
-            // end of swiper-wrapper
-          // end of swiper container
-        // end of slider-container
-        // end of image slider
-      // end of col
-    // end of row
-  // end of container
-// end of slider-1
-// end of customers
-// Description
 .cards-1
   .container
     .row
       .col-lg-12
         .above-heading DESCRIPTION
         h2.h2-heading Marketing Automation Will Bring More Qualified Leads
-      // end of col
-    // end of row
     .row
       .col-lg-12
-        // Card
         .card
           .card-image
             img.img-fluid(src='images/description-1.png' alt='alternative')
@@ -161,8 +89,6 @@ header#header.header
             h4.card-title Dashboard
             p
               | It&apos;s very easy to check your income and expenses trend. Just create your Tivo account
-        // end of card
-        // Card
         .card
           .card-image
             img.img-fluid(src='images/description-2.png' alt='alternative')
@@ -170,8 +96,6 @@ header#header.header
             h4.card-title Transactions
             p
               | FETA let you add and remove transactions and give you a list of your transactions 
-        // end of card
-        // Card
         .card
           .card-image
             img.img-fluid(src='images/description-3.png' alt='alternative')
@@ -179,13 +103,6 @@ header#header.header
             h4.card-title Statistics
             p
               | FETA gives you your income and expenses statistics in detail 
-        // end of card
-      // end of col
-    // end of row
-  // end of container
-// end of cards-1
-// end of description
-// Features
 #features.tabs
   .container
     .row
@@ -194,11 +111,8 @@ header#header.header
         h2.h2-heading Marketing Automation
         p.p-heading
           | Take your business strategy to the next level and automatize your marketing tasks to save time for product development. Tivo can provide results in less than 2 weeks
-      // end of col
-    // end of row
     .row
       .col-lg-12
-        // Tabs Links
         ul#argoTabs.nav.nav-tabs(role='tablist')
           li.nav-item
             a#nav-tab-1.nav-link.active(data-toggle='tab' href='#tab-1' role='tab' aria-controls='tab-1' aria-selected='true')
@@ -212,17 +126,12 @@ header#header.header
             a#nav-tab-3.nav-link(data-toggle='tab' href='#tab-3' role='tab' aria-controls='tab-3' aria-selected='false')
               i.fas.fa-chart-bar
               | Statistics
-        // end of tabs links
-        // Tabs Content
         #argoTabsContent.tab-content
-          // Tab
           #tab-1.tab-pane.fade.show.active(role='tabpanel' aria-labelledby='tab-1')
             .row
               .col-lg-6
                 .image-container
                   img.img-fluid(src='images/features-1.png' alt='alternative')
-                // end of image-container
-              // end of col
               .col-lg-6
                 .text-container
                   h3 List Building Is Easier Than Ever
@@ -241,19 +150,11 @@ header#header.header
                       i.fas.fa-square
                       .media-body Add and remove subscribers using the control panel
                   a.btn-solid-reg.page-scroll(href='Registration') SIGN UP
-                // end of text-container
-              // end of col
-            // end of row
-          // end of tab-pane
-          // end of tab
-          // Tab
           #tab-2.tab-pane.fade(role='tabpanel' aria-labelledby='tab-2')
             .row
               .col-lg-6
                 .image-container
                   img.img-fluid(src='images/features-2.png' alt='alternative')
-                // end of image-container
-              // end of col
               .col-lg-6
                 .text-container
                   h3 Campaigns Monitoring Tools
@@ -270,19 +171,11 @@ header#header.header
                       i.fas.fa-square
                       .media-body Evaluate campaign results and optimize future actions
                   a.btn-solid-reg.page-scroll(href='Registration') SIGN UP
-                // end of text-container
-              // end of col
-            // end of row
-          // end of tab-pane
-          // end of tab
-          // Tab
           #tab-3.tab-pane.fade(role='tabpanel' aria-labelledby='tab-3')
             .row
               .col-lg-6
                 .image-container
                   img.img-fluid(src='images/features-3.png' alt='alternative')
-                // end of image-container
-              // end of col
               .col-lg-6
                 .text-container
                   h3 Analytics Control Panel
@@ -298,28 +191,13 @@ header#header.header
                     li.media
                       i.fas.fa-square
                       .media-body The generated reports are important for your strategy
-                  a.btn-solid-reg.page-scroll(href='Registration') SIGN UP
-                // end of text-container
-              // end of col
-            // end of row
-          // end of tab-pane
-          // end of tab
-        // end of tab content
-        // end of tabs content
-      // end of col
-    // end of row
-  // end of container
-// end of tabs
-// end of features
-// Pricing
+                  a.btn-solid-reg.page-scroll(href='registration') SIGN UP
 #pricing.cards-2
   .container
     .row
       .col-lg-12
         .above-heading PRICING
         h2.h2-heading Pricing Options Table
-      // end of col
-    // end of row
     .row
       .col-lg-12
         // Card
@@ -349,9 +227,6 @@ header#header.header
                 .media-body Planning And Evaluation
             .button-wrapper
               a.btn-solid-reg.page-scroll(href='Registration') SIGN UP
-        // end of card
-        // end of card
-        // Card
         .card
           .card-body
             .card-title ADVANCED
@@ -378,14 +253,7 @@ header#header.header
                 .media-body Planning And Evaluation
             .button-wrapper
               a.btn-solid-reg.page-scroll(href='Registration') SIGN UP
-        // end of card
-        // end of card
-        // Card
         .card
-          //
-            <div class="label">
-            <p class="best-value">Best Value</p>
-            </div>
           .card-body
             .card-title COMPLETE
             .price
@@ -411,27 +279,11 @@ header#header.header
                 .media-body Planning And Evaluation
             .button-wrapper
               a.btn-solid-reg.page-scroll(href='Registration') SIGN UP
-        // end of card
-        // end of card
-      // end of col
-    // end of row
-  // end of container
-// end of cards-2
-// end of pricing
-// Scripts
 script(src='js/jquery.min.js')
-// jQuery for Bootstrap's JavaScript plugins
 script(src='js/popper.min.js')
-// Popper tooltip library for Bootstrap
 script(src='js/bootstrap.min.js')
-// Bootstrap framework
 script(src='js/jquery.easing.min.js')
-// jQuery Easing for smooth scrolling between anchors
 script(src='js/swiper.min.js')
-// Swiper for image and text sliders
 script(src='js/jquery.magnific-popup.js')
-// Magnific Popup for lightboxes
 script(src='js/validator.min.js')
-// Validator.js - Bootstrap plugin that validates forms
 script(src='js/scripts.js')
-// Custom scripts
