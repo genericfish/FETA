@@ -45,7 +45,7 @@ module.exports = view => {
             }
 
             let total = await user.getMonthlyAggregate()
-            let total_table = [["time", "amount", { role: "style" }], ["Start Balance", total[1]/100, "red"], ["End Balance", total[0]/100, "blue"]]
+            let total_table = [["time", "amount", { role: "style" }], ["Start Balance", total[1] / 100, "red"], ["End Balance", total[0] / 100, "blue"]]
             let end_balance = total[0]
             let start_balance = total[1]
             let gain = end_balance - start_balance
@@ -60,7 +60,7 @@ module.exports = view => {
                 let incomeList = await user.getIncomeTransactions(category.id, getLastMonth(), new Date())
 
                 incomeList.forEach(transaction => {
-                    const {amount, date, note} = transaction.data()
+                    const { amount, date, note } = transaction.data()
                     const id = transaction.id
                     const dateObj = date.toDate()
 
@@ -72,11 +72,11 @@ module.exports = view => {
                 let expenseList = await user.getExpensesTransactions(category.id, getLastMonth(), new Date())
 
                 expenseList.forEach(transaction => {
-                    const {amount, date, note} = transaction.data()
+                    const { amount, date, note } = transaction.data()
                     const id = transaction.id
                     const dateObj = date.toDate()
 
-                    transactions.push([id, "expense", new Money(amount).Display, dateString(dateObj), note, category.id, date])
+                    transactions.push([id, "expense", new Money(-amount).Display, dateString(dateObj), note, category.id, date])
                 })
             }
 
