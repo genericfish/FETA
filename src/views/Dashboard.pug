@@ -55,13 +55,13 @@ block content
         include templates/add-transaction.pug
     .row.spacer
       .pie-chart
-        .row
+        .row.justify-content-center
           if incomes.length > 0
-            .col
+            .col-md-6
               h3 Income
               #incomechart(style='width: 100%; height: 400px;')
           if expenses.length > 0
-            .col
+            .col-md-6
               h3 Expenses
               #expensechart(style='width: 100%; height: 400px;')
 
@@ -110,45 +110,47 @@ block scripts
 
       chart.draw(view, google.charts.Bar.convertOptions(options))
     }
-    google.charts.setOnLoadCallback(drawIncomeChart);
-    const chartOptions = {
-        pieHole: 0.4,
-        backgroundColor: 'transparent',
-        legend: 'none',
-        pieSliceText: 'label',
-        pieStartAngle: 29,
-        chartArea: {
-          width: '100%',
-          height: '100%'
-        },
-        theme: 'material'
+    $(window).resize(drawChart)
+  if incomes.length > 0
+    script(type='text/javascript').
+      google.charts.setOnLoadCallback(drawIncomeChart);
+      const chartOptions = {
+          pieHole: 0.4,
+          backgroundColor: 'transparent',
+          legend: 'none',
+          pieSliceText: 'label',
+          pieStartAngle: 29,
+          chartArea: {
+            width: '100%',
+            height: '100%'
+          },
+          theme: 'material'
+        }
+      function drawIncomeChart() {
+        const incomes = !{JSON.stringify(incomes)}
+
+        var data = google.visualization.arrayToDataTable([
+          ["Category", "Amount"],
+          ...incomes]
+        )
+
+        var chart = new google.visualization.PieChart(document.getElementById('incomechart'))
+        chart.draw(data, chartOptions);
       }
-    function drawIncomeChart() {
-      const incomes = !{JSON.stringify(incomes)}
+      $(window).resize(drawIncomeChart)
+  if expenses.length > 0
+    script(type='text/javascript').
+      google.charts.setOnLoadCallback(drawExpenseChart);
+      function drawExpenseChart() {
+        const expenses = !{JSON.stringify(expenses)}
+        var data = google.visualization.arrayToDataTable([
+          ["Category", "Amount"],
+          ...expenses]
+        )
 
-      var data = google.visualization.arrayToDataTable([
-        ["Category", "Amount"],
-        ...incomes]
-      )
+        var chart = new google.visualization.PieChart(document.getElementById('expensechart'))
 
-      var chart = new google.visualization.PieChart(document.getElementById('incomechart'))
-      chart.draw(data, chartOptions);
-    }
-    google.charts.setOnLoadCallback(drawExpenseChart);
-    function drawExpenseChart() {
-      const expenses = !{JSON.stringify(expenses)}
-      var data = google.visualization.arrayToDataTable([
-        ["Category", "Amount"],
-        ...expenses]
-      )
+        chart.draw(data, chartOptions);
+      }
 
-      var chart = new google.visualization.PieChart(document.getElementById('expensechart'))
-
-      chart.draw(data, chartOptions);
-    }
-
-    $(window).resize(_ => {
-      drawExpenseChart()
-      drawIncomeChart()
-      drawChart()
-    })
+      $(window).resize(drawExpenseChart)
