@@ -25,13 +25,6 @@
         });
     });
 
-    // closes the responsive menu on menu item click
-    $(".navbar-nav li a").on("click", function (event) {
-        if (!$(this).parent().hasClass('dropdown'))
-            $(".navbar-collapse").collapse('hide');
-    });
-
-
     /* Image Slider - Swiper */
     var slider = new Swiper('.slider', {
         autoplay: {
@@ -76,11 +69,6 @@
         } else {
             $('a.back-to-top').fadeOut('500');
         }
-    });
-
-    /* Removes Long Focus On Buttons */
-    $(".button, a, button").mouseup(function () {
-        $(this).blur();
     });
 
 })(jQuery);
