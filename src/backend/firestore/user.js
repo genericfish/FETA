@@ -220,6 +220,19 @@ class User {
         }
     }
 
+    // Return all goals focused on saving money
+    async getSavingsGoals() {
+        let goals = await this.goals.collection("savings").get()
+        return goals.docs
+    }
+
+    // Return all goals focused on spending money
+    async getAmortizationsGoals() {
+        let goals = await this.goals.collection("amortizations").get()
+        return goals.docs
+    }
+
+
     // Add a savings transaction which contributes to a goal. Date should be a JS Date
     async addSavingsTransaction(goal, date, amount, note) {
         const data = {
@@ -285,6 +298,16 @@ class User {
         let change = doc.data().amount
         this.amortizations.doc(goal).collection("changes").doc(transactionID).delete()
         this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(-change) })
+    }
+
+    async getSavingsTransactions(goal){
+        let collection = await this.goals.collection("savings").doc(goal).collection("changes").get()
+        return collection.docs
+    }
+
+    async getAmortizationsTransactions(goal){
+        let collection = await this.goals.collection("amortizations").doc(goal).collection("changes").get()
+        return collection.docs
     }
 
     // Adds a new item to track as a NMT
