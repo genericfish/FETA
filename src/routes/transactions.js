@@ -3,7 +3,7 @@
 const express = require("express")
 const path = require("path")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
-const { Money, RFC3339 } = require(path.join(__basedir, "backend", "utils"))
+const { Money, RFC3339, anyEmpty } = require(path.join(__basedir, "backend", "utils"))
 const router = express.Router()
 
 module.exports = view => {
@@ -83,7 +83,6 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const { type, category, amount, date, note } = req.body
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(type, category, amount, date)) {
@@ -107,7 +106,6 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const { ID, type, category } = req.body
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(ID, type, category)) {
@@ -128,7 +126,6 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const { ID, type, category, date, amount, note } = req.body
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(ID, type, category, date, amount)) {
@@ -151,7 +148,6 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const { name, note } = req.body
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(name)) {
@@ -168,7 +164,6 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const { name, amount, note } = req.body
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(name, amount)) {
@@ -187,7 +182,6 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const { name } = req.body
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(name)) {
@@ -204,7 +198,6 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const { item, ID } = req.body
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(item, ID)) {
@@ -220,7 +213,6 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const { item, ID, date, note, amount } = req.body
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(item, ID, date, amount)) {
@@ -239,7 +231,6 @@ module.exports = view => {
 
             const { item, amount, date, note } = req.body
 
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
 
             // Check to see if any field was left blank

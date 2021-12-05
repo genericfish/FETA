@@ -38,8 +38,9 @@ function getLastMonth() {
     return begin
 }
 
-function RFC3339(date) {
-    return date.toISOString().split('T')[0]
+module.exports = {
+    Money: Money,
+    getLastMonth: getLastMonth,
+    RFC3339: date => date.toISOString().split('T')[0],
+    anyEmpty: (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
 }
-
-module.exports = { Money: Money, getLastMonth: getLastMonth, RFC3339: RFC3339 }

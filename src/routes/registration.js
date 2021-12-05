@@ -5,6 +5,7 @@ const path = require("path")
 const router = express.Router()
 
 const { Database } = require(path.join(__basedir, "backend", "firestore"))
+const { anyEmpty } = require(path.join(__basedir, "backend", "utils"))
 
 module.exports = view => {
     router
@@ -23,8 +24,6 @@ module.exports = view => {
         })
         .post("/", async (req, res) => {
             const { email, password, confirm, firstname, lastname } = req.body;
-
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
 
             // Check to see if any field was left blank
             if (anyEmpty(email, password, confirm, firstname, lastname)) {
