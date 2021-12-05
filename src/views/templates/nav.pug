@@ -15,5 +15,11 @@ nav.navbar.navbar-expand-lg.navbar-dark.navbar-custom.fixed-top
           a.nav-link.page-scroll(href='/transactions') Transactions
         li.nav-item
           a.nav-link.page-scroll(href='/goal') Goals
-        li.nav-item
-          a.btn-outline-sm(href='logout') Log Out
+        li.nav-item.dropdown
+          a.nav-link.dropdown-toggle#navbarDropdown(href='#' role='button' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false') !{name}
+          ul.dropdown-menu(aria-labelledby='navbarDropdown')
+            li
+              a.dropdown-item(href='/settings') Settings
+            li.dropdown-divider
+            li
+              a.dropdown-item.btn-outline-sm(href='/logout') Log Out
