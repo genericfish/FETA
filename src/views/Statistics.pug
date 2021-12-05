@@ -7,12 +7,18 @@ block content
     .row.spacer
       .summary
         .item
-          h3="Your Net Balance is "+net
-          h4=message
+          h3=message
         .separator
         .item
-          h3="Your Net Income is "+income_sum 
-          h3="Your Net Expense is "+expense_sum
+          h3=net
+          p Net Balance
+        .separator
+        .item
+          h3=income_sum
+          p Net Income
+        .item
+          h3=expense_sum
+          p Net expenses
     .row.justify-content-center.spacer
       .col-12
         if incomes.length > 0
