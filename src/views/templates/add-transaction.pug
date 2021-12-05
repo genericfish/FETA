@@ -7,7 +7,7 @@ button.btn-fancy(type="button" data-bs-toggle="modal" data-bs-target="#addTransa
                 h5.modal-title#addTransactionModalLabel Add a Transaction
                 button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
             .modal-body
-                form.add-transaction-form(action="/dashboard/add" method="post")
+                form.add-transaction-form(action="/transaction/add" method="post")
                     .mb-3
                         select.form-select(name="type")
                             option(value="income" selected="selected") Income
