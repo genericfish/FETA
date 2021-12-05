@@ -1,0 +1,23 @@
+button.btn-fancy(type="button" data-bs-toggle="modal" data-bs-target="#addGoalModal") Add a Goal
+
+.modal.fade#addGoalModal(tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true")
+    .modal-dialog.modal-dialog-centered
+        .modal-content
+            .modal-header
+                h5.modal-title#addGoalModalLabel Add a Goal 
+                button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+            .modal-body
+                form.add-Goal-form(action="/goal/addGoal" method="post")
+                    .mb-3
+                        select.form-select(name="type")
+                            option(value="saving" selected="selected") Saving
+                            option(value="amortization") Amortization
+                    .mb-3
+                        input.form-control(type="text" name="name" placeholder="name")
+                    .mb-3
+                        input.form-control(type="text" name="amount" placeholder="amount")
+                    .mb-3
+                        input.form-control(type="date" name="date" placeholder="yyyy-mm-dd")
+                    .mb-3
+                        input.form-control(type="text" name="note" placeholder="note")
+                    input.btn-fancy(type="submit" value="Add goal")

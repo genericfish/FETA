@@ -22,7 +22,7 @@ module.exports = view => {
                 let incomeList = await user.getIncomeTransactions(category.id)
 
                 incomeList.forEach(transaction => {
-                    const {amount, date, note} = transaction.data()
+                    const { amount, date, note } = transaction.data()
                     const id = transaction.id
                     const dateObj = date.toDate()
 
@@ -34,11 +34,11 @@ module.exports = view => {
                 let expenseList = await user.getExpensesTransactions(category.id)
 
                 expenseList.forEach(transaction => {
-                    const {amount, date, note} = transaction.data()
+                    const { amount, date, note } = transaction.data()
                     const id = transaction.id
                     const dateObj = date.toDate()
 
-                    transactions.push([id, "expense", new Money(amount).Display, dateString(dateObj), note, category.id, date, RFC3339(dateObj)])
+                    transactions.push([id, "expense", new Money(-amount).Display, dateString(dateObj), note, category.id, date, RFC3339(dateObj)])
                 })
             }
 
