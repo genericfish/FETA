@@ -306,6 +306,10 @@ class User {
         this.deleteDocument(this.nmt.collection("items").doc(name))
     }
 
+    async getNMTItems() {
+        return this.nmt.collection("items").get().docs
+    }
+
     // Adds a transaction for a specified NMT
     async addNMTTransaction(nmt, amount, date, note) {
         const data = {
