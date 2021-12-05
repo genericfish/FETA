@@ -16,7 +16,7 @@ class User {
         this.goals = this.transactions.doc("goals")
         this.savings = this.goals.collection("savings")
         this.amortizations = this.goals.collection("amortizations")
-        this.nmt = this.transactions.doc("nmt")
+        this.nmt = this.transactions.doc("nmt").collection("items")
     }
 
     // Returns an array of transactions from a collection within [dateMin, dateMax], where dates are JS Date objects
@@ -293,21 +293,21 @@ class User {
             current: 0,
             note: note
         }
-        this.nmt.collection("items").doc(name).set(data, { merge: true })
+        this.nmt.doc(name).set(data, { merge: true })
     }
 
     // Modifies an NMT item
     async modifyNMT(name, newData) {
-        this.nmt.collection("items").doc(name).set(newData, { merge: true })
+        this.nmt.doc(name).set(newData, { merge: true })
     }
 
     // Deletes an NFT item recursively
     async deleteNMT(name) {
-        this.deleteDocument(this.nmt.collection("items").doc(name))
+        this.deleteDocument(this.nmt.doc(name))
     }
 
     async getNMTItems() {
-        let collection = await this.nmt.collection("items").get()
+        let collection = await this.nmt.get()
         return collection.docs
     }
 
@@ -318,21 +318,22 @@ class User {
             date: date,
             note: note
         }
-        this.nmt.collection("items").doc(nmt).update({ "current": firestore.FieldValue.increment(amount) })
-        this.nmt.collection("items").doc(nmt).collection("changes").doc().set(data, { merge: true })
+        this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(amount) })
+        this.nmt.doc(nmt).collection("changes").doc().set(data, { merge: true })
     }
 
     // Modifies a transaction for a specified NMT
     async modifyNMTTransaction(nmt, transactionID, newData) {
-        let transaction = await this.nmt.doc(nmt).collection("changes").doc(transactionID).get()
+        const transaction = await this.nmt.doc(nmt).collection("changes").doc(transactionID).get()
+
         let change = newData.amount
-        if (transaction.exists) {
-            if (change != undefined) {
-                change -= transaction.data().amount
-                this.nmt.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
-            }
+
+        if (transaction.exists && change != undefined) {
+            change -= transaction.data().amount
+            this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(change) })
         }
-        this.nmt.doc(nmt).collection("changes").doc(transactionID).set(newData, { merge: true })
+
+        await this.nmt.doc(nmt).collection("changes").doc(transactionID).set(newData, { merge: true })
     }
 
     // Deletes a transaction for a specified NMT
@@ -344,7 +345,7 @@ class User {
     }
 
     async getNMTTransactions(item){
-        const changes = await this.nmt.collection("items").doc(item).collection("changes").get()
+        const changes = await this.nmt.doc(item).collection("changes").get()
         return changes.docs
     }
 
