@@ -1,0 +1,15 @@
+button.btn-fancy(type="button" data-bs-toggle="modal" data-bs-target="#addNMTModal") Add a NMT
+
+.modal.fade#addNMTModal(tabindex="-1" aria-labelledby="addNMTModalLabel" aria-hidden="true")
+    .modal-dialog.modal-dialog-centered
+        .modal-content
+            .modal-header
+                h5.modal-title#addNMTModalLabel Add a NMT
+                button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+            .modal-body
+                form.add-NMT-form(action="/transaction/addItem" method="post")
+                    .mb-3
+                        input.form-control(type="text" name="name" placeholder="name")
+                    .mb-3
+                        input.form-control(type="text" name="note" placeholder="note")
+                    input.btn-fancy(type="submit" value="Add NMT")
