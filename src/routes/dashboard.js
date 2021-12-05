@@ -3,7 +3,7 @@
 const express = require("express")
 const path = require("path")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
-const { Money, getLastMonth } = require(path.join(__basedir, "backend", "utils"))
+const { Money, getLastMonth, dateString } = require(path.join(__basedir, "backend", "utils"))
 const router = express.Router()
 
 module.exports = view => {
@@ -54,31 +54,33 @@ module.exports = view => {
             if (start_balance != 0)
                 percent_gain = Math.round((gain / Math.abs(start_balance)) * 100)
 
-            let a = []
-            for (let i = 0; i < income_categories.length; i++) {
-                let income_array = await user.getIncomeTransactions(income_categories[i].id, getLastMonth(), new Date())
-                for (let j = 0; j < income_array.length; j++) {
-                    let income = income_array[j].data().amount
-                    let date = income_array[j].data().date.toDate().toDateString()
-                    let note = income_array[j].data().note
-                    let category = income_categories[i].id
-                    let id = income_array[j].id
-                    a.push([id, "income", new Money(income).Display, date, note, category, income_array[j].data().date])
-                }
+            let transactions = []
+
+            for (let category of income_categories) {
+                let incomeList = await user.getIncomeTransactions(category.id, getLastMonth(), new Date())
+
+                incomeList.forEach(transaction => {
+                    const {amount, date, note} = transaction.data()
+                    const id = transaction.id
+                    const dateObj = date.toDate()
+
+                    transactions.push([id, "income", new Money(amount).Display, dateString(dateObj), note, category.id, date])
+                })
             }
-            
-            for (let i = 0; i < expense_categories.length; i++) {
-                let expense_array = await user.getExpensesTransactions(expense_categories[i].id, getLastMonth(), new Date())
-                for (let j = 0; j < expense_array.length; j++) {
-                    let expense = -expense_array[j].data().amount
-                    let date = expense_array[j].data().date.toDate().toDateString()
-                    let note = expense_array[j].data().note
-                    let category = expense_categories[i].id
-                    let id = expense_array[j].id
-                    a.push([id, "expense", new Money(expense).Display, date, note, category, expense_array[j].data().date])
-                }
+
+            for (let category of expense_categories) {
+                let expenseList = await user.getExpensesTransactions(category.id, getLastMonth(), new Date())
+
+                expenseList.forEach(transaction => {
+                    const {amount, date, note} = transaction.data()
+                    const id = transaction.id
+                    const dateObj = date.toDate()
+
+                    transactions.push([id, "expense", new Money(amount).Display, dateString(dateObj), note, category.id, date])
+                })
             }
-            a.sort(function (a, b) { return b[6] - a[6]})
+
+            transactions.sort((a, b) => b[6] - a[6])
 
             let b = []
             let c = []
@@ -121,7 +123,7 @@ module.exports = view => {
                 total: total_table,
                 gain: new Money(gain).Display,
                 percent_gain: percent_gain,
-                transactions: a,
+                transactions: transactions,
                 incomes: b,
                 expenses: c,
                 categories: categories,
