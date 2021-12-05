@@ -27,7 +27,7 @@ module.exports = view => {
                 income_sum += income_amount
                 income += income_amount
             }
-            a.push([income_categories[i].id, income])
+            a.push([income_categories[i].id, Math.round(income / 100, 2), new Money(income).Display])
 
         }
         for (let i = 0; i < expense_categories.length; i++) {
@@ -38,7 +38,7 @@ module.exports = view => {
                 expense_sum += expense_amount
                 expense += expense_amount
             }
-            b.push([expense_categories[i].id, expense])
+            b.push([expense_categories[i].id, Math.round(expense / 100, 2), new Money(expense).Display])
         }
         net = income_sum - expense_sum
         let message = ""
