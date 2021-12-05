@@ -95,8 +95,6 @@ block content
       else 
         tr No Items
 
-
-
     table.table
       thead 
         th="Amount"
@@ -136,9 +134,9 @@ block content
                     form(class="edit-transaction-form" action="/transactions/editNMT" method="post")
                       input(type="hidden" name="item" value=NMT[4])
                       input(type="hidden" name="ID" value=NMT[0])
-                      input(type="hidden" name="date" value=NMT[2])
+                      input(type="hidden" name="date" value=NMT[6])
                       input(type="hidden" name="note" value=NMT[3])
-                      input(type="amount" name="amount" placeholder="amount")
+                      input(type="text" name="amount" placeholder="amount")
                       input(type="submit" value="Edit")
       else 
         tr No NMTs
