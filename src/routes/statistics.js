@@ -49,6 +49,9 @@ module.exports = view => {
         } else {
             message = "Good Job!"
         }
+
+        let name = await user.reference.get()
+
         res.send(view({
             header: "Statistics",
             incomes: a,
@@ -56,7 +59,8 @@ module.exports = view => {
             income_sum: new Money(income_sum).Display,
             expense_sum: new Money(expense_sum).Display,
             net: new Money(net).Display,
-            message: message
+            message: message,
+            name: name.data().firstname
         }))
     })
 

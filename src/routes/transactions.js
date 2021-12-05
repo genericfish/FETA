@@ -70,12 +70,15 @@ module.exports = view => {
             let categories = await user.getMonetaryCategories()
             categories = Array.from(categories).map(category => category.id)
 
+            let name = await user.reference.get()
+
             res.send(view({
                 header: "Transactions",
                 transactions: a,
                 NMTs: b,
                 items: items,
-                categories: categories
+                categories: categories,
+                name: name.data().firstname
             }))
         })
         .post("/add", async (req, res) => {

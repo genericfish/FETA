@@ -7,12 +7,17 @@ const { Money, RFC3339, anyEmpty } = require(path.join(__basedir, "backend", "ut
 const router = express.Router()
 
 module.exports = view => {
-    router.get("/", (req, res) => {
+    router.get("/", async (req, res) => {
         if (req.session.loggedIn !== true)
             return res.redirect("/login")
 
+        const user = new User(req.session.email)
+
+        let name = await user.reference.get()
+
         res.send(view({
-            header: "Financial Excellence Tracking Application"
+            header: "Goals",
+            name: name.data().firstname
         }))
     })
 

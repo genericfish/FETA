@@ -110,6 +110,8 @@ module.exports = view => {
             let categories = await user.getMonetaryCategories()
             categories = Array.from(categories).map(category => category.id)
 
+            let name = await user.reference.get()
+
             res.send(view({
                 header: "Dashboard",
                 income_sum: new Money(income_sum).Display,
@@ -122,7 +124,8 @@ module.exports = view => {
                 transactions: a,
                 incomes: b,
                 expenses: c,
-                categories: categories
+                categories: categories,
+                name: name.data().firstname
             }))
         })
 
