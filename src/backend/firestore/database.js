@@ -37,7 +37,8 @@ class Database {
         const data = {
             password: hashedPassword,
             firstname: firstname,
-            lastname: lastname
+            lastname: lastname,
+            total: 0
         }
 
         await Database.gDatabase.collection("users").doc(email).set(data)
