@@ -367,3 +367,11 @@ p.error {
   border: 1px solid red;
   color: red;
 }
+
+.table .group button {
+  margin: 0 .25rem;
+}
+
+.table td.group {
+  text-align: right;
+}

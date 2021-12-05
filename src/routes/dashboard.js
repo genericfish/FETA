@@ -93,7 +93,7 @@ module.exports = view => {
                 }
 
                 if (income > 0)
-                    b.push([income_categories[i].id, income])
+                    b.push([income_categories[i].id, Math.round(income / 100, 2)])
 
             }
             for (let i = 0; i < expense_categories.length; i++) {
@@ -106,7 +106,7 @@ module.exports = view => {
                 }
 
                 if (expense > 0)
-                    c.push([expense_categories[i].id, expense])
+                    c.push([expense_categories[i].id, Math.round(expense / 100, 2)])
             }
 
             let categories = await user.getMonetaryCategories()
