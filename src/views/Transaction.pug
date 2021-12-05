@@ -55,4 +55,55 @@ block content
       else 
         tr No transactions
 
+    include templates/add-NMT.pug
+    include templates/edit-NMT.pug
+    include templates/remove-NMT.pug
+    include templates/add-NMTtransaction.pug
+
+    table.table
+        thead 
+          th="Amount"
+          th="Date" 
+          th="Note"
+          th="item"
+          th=""
+          th=""
+        each NMT,idx in NMTs
+          tr 
+            each field, index in NMT
+              if index > 0 && index < 5
+                td=field
+            td
+              button.btn.btn-primary(type="button" data-bs-toggle="modal" data-bs-target=`#deleteNMTModal${idx}`) Remove
+              .modal.fade(id=`deleteNMTModal${idx}` tabindex="-1" aria-labelledby=`deleteNMTModalLabel${idx}` aria-hidden="true")
+                .modal-dialog.modal-dialog-centered
+                  .modal-content
+                    .modal-header
+                      h5(class="modal-title" id="deleteNMTModalLabel") Remove Transaction
+                      button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                    .modal-body
+                      h3="Are you sure?"
+                      form(class="remove-NMTtransaction-form" action="/transaction/removeNMT" method="post")
+                        input(type="hidden" name="item" value=transaction[4])
+                        input(type="hidden" name="ID" value=transaction[0])
+                        input(type="submit" value="Remove")
+            td
+              button.btn.btn-primary(type="button" data-bs-toggle="modal" data-bs-target=`#editNMTModal${idx}`) Edit
+              .modal.fade(id=`editNMTModal${idx}` tabindex="-1" aria-labelledby=`editModalLabel${idx}` aria-hidden="true")
+                .modal-dialog.modal-dialog-centered
+                  .modal-content
+                    .modal-header
+                      h5(class="modal-title" id="editModalLabel") Edit Transaction
+                      button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+                    .modal-body
+                      form(class="edit-transaction-form" action="/transaction/editNMT" method="post")
+                        input(type="hidden" name="item" value=transaction[4])
+                        input(type="hidden" name="ID" value=transaction[0])
+                        input(type="hidden" name="date" value=transaction[2])
+                        input(type="hidden" name="note" value=transaction[3])
+                        input(type="amount" name="amount" placeholder="amount")
+                        input(type="submit" value="Edit")
+        else 
+          tr No NMTs
+
   
