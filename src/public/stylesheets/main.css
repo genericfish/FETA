@@ -70,11 +70,15 @@ body {
 .dashboard-page,
 .statistics-page {
   margin-top: 10em;
+  width: 100%;
+  max-width: 996px;
+  text-align: center;
 }
 
 .content {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 /* The slider */
@@ -123,46 +127,6 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
-}
-
-/* Style buttons */
-.bi {
-  padding: 18px 24px; /* Some padding */
-  font-size: 24px; /* Set a font size */
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer; /* Mouse pointer on hover */
-  color:#045243;
-}
-
-/* Darker background on mouse-over */
-.bi:hover {
-  opacity: 0.7;
-}
-
-.landing-page {
-  width: 500px;
-  margin: 0 auto;
-  text-align: center;
-}
-.landing-header {
-  width: 100%;
-  margin: 0 auto;
-}
-
-.dashboard-page {
-  max-width: 996px;
-  text-align: center;
-}
-
-.transaction-page{
-  max-width: 996px;
-  text-align: center;
-}
-
-.statistics-page{
-  max-width: 996px;
-  text-align: center;
 }
 
 .login-page {
@@ -322,16 +286,28 @@ a.white {
   margin: 2rem auto;
   padding: 1rem;
   width: 65%;
-  background: linear-gradient(-22deg,rgba(97, 99, 3, 0.25),rgba(4, 82, 66, 0.25));
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
 
-.summary * {
+.summary p,
+.summary h2,
+.summary h3,
+table.table {
   color: #fff;
 }
 
-.dark-mode .summary {
+.dark-mode .summary,
+.dark-mode table.table {
   background: linear-gradient(30deg, rgba(169, 251, 215, 0.25),rgba(48, 115, 81, 0.25));
+}
+
+.summary,
+table.table {
+  background: linear-gradient(-22deg,rgba(97, 99, 3, 0.25),rgba(4, 82, 66, 0.25));
+}
+
+table.table {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
 }
 
 .summary .title {

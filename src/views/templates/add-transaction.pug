@@ -7,13 +7,17 @@ button.btn-fancy(type="button" data-bs-toggle="modal" data-bs-target="#addTransa
                 h5.modal-title#addTransactionModalLabel Add a Transaction
                 button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
             .modal-body
-                form.add-transaction-form(action="/dashboard/add" method="post")
+                form.add-transaction-form(action="/transactions/add" method="post")
                     .mb-3
                         select.form-select(name="type")
                             option(value="income" selected="selected") Income
                             option(value="expense") Expense
                     .mb-3
-                        input.form-control(type="text" name="category" placeholder="category")
+                        input.form-control(type="text" name="category" placeholder="category" list="categories")
+                        if categories.length > 0
+                            datalist#categories
+                                each category in categories
+                                    option(value=category)
                     .mb-3
                         input.form-control(type="text" name="amount" placeholder="amount")
                     .mb-3
