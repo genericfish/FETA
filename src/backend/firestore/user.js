@@ -344,7 +344,8 @@ class User {
     }
 
     async getNMTTransactions(item){
-        return await this.nmt.collection("items").doc(item).collection("changes").get().docs
+        const changes = await this.nmt.collection("items").doc(item).collection("changes").get()
+        return changes.docs
     }
 
     async getMonthlyTransactions() {

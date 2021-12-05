@@ -43,28 +43,37 @@ module.exports = view => {
 
             let item_list = await user.getNMTItems() 
             let b = []
+            let items = [] 
+
+            for(let i = 0; i < item_list.length; i++) {
+                let item = item_list[i].id
+                let amount = item_list[i].data().current
+                let note = item_list[i].data().note
+                items.push([item, amount, note])
+            }
+
             for (let i = 0; i < item_list.length; i++) {
                 let NMT_array = await user.getNMTTransactions(item_list[i].id)
-                if(NMT_array != undefined) {
-                    for (let j = 0; j < NMT_array.length; j++) {
-                        let amount = NMT_array[j].data().amount
-                        let date = NMT_array[j].data().date.toDate().toDateString()
-                        let note = NMT_array[j].data().note
-                        let item = NMT_list[i].id
-                        let id = NMT_array[j].id
-                        b.push([id, amount, date, note, item, NMT_array[j].data().date])
-                    }
+                for (let j = 0; j < NMT_array.length; j++) {
+                    let amount = NMT_array[j].data().amount
+                    let date = NMT_array[j].data().date.toDate().toDateString()
+                    let note = NMT_array[j].data().note
+                    let item = item_list[i].id
+                    let id = NMT_array[j].id
+                    b.push([id, amount, date, note, item, NMT_array[j].data().date])
                 } 
             }
 
 
             a.sort(function (a, b) { return b[6] - a[6] })
             b.sort(function (a, b) { return b[5] - a[5] })
+            items.sort(function(a, b) {return a[0] - b[0]})
 
             res.send(view({
                 header: "Transactions",
                 transactions: a, 
-                NMTs: b
+                NMTs: b,
+                items: items
             }))
         })
         .post("/add", async (req, res) => {
@@ -236,6 +245,7 @@ module.exports = view => {
                 req.session.error = "Please fill out all fields"
                 return req.session.save(_ => res.redirect("/transaction"))
             }
+            
 
             await user.addNMTTransaction(req.body.item, parseInt(req.body.amount), new Date(req.body.date), req.body.note)
 
