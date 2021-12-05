@@ -4,72 +4,102 @@ block content
   include templates/nav.pug
   .statistics-page 
     h1="Statistics"
+    .row.spacer
+      .summary
+        .item
+          h3="Your Net Balance is "+net
+          h4=message
+        .separator
+        .item
+          h3="Your Net Income is "+income_sum 
+          h3="Your Net Expense is "+expense_sum
+    .row.justify-content-center.spacer
+      .col-12
+        if incomes.length > 0
+          h3="Your Incomes"
+          table.table
+            thead 
+              th="Category"
+              th="Amount" 
+            each income in incomes
+              tr
+                each column in income
+                  td=column 
+            else 
+              tr No incomes 
+        else 
+          h3 You have no incomes
+      .col-12
+        if expenses.length > 0
+          h3="Your Expenses"
+          table.table
+            thead 
+              th="Category"
+              th="Amount" 
+            each expense in expenses
+              tr
+                each column in expense
+                  td=column
+            else 
+              tr No expenses
+        else 
+          h3 You have no expenses
+    .row.spacer
+      .pie-chart
+        .row 
+          if incomes.length > 0
+            .col
+              h3="Income"
+              script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
+              script(type='text/javascript').
+                google.charts.load("current", {packages:["corechart"]});
+                google.charts.setOnLoadCallback(drawIncomeChart);
+                function drawIncomeChart() {
+                  const incomes = !{JSON.stringify(incomes)}
+                var data = google.visualization.arrayToDataTable([["Category", "Amount"],...incomes]);
+                var options = {
+                pieHole: 0.4,
+                backgroundColor: 'transparent',
+                legend: 'none',
+                pieSliceText: 'label',
+                pieStartAngle: 29,
+                chartArea: {
+                  width: '100%',
+                  height: '100%'
+                },
+                theme: 'material'
+                };
+                var chart = new google.visualization.PieChart(document.getElementById('incomechart'));
+                chart.draw(data, options);
+                }
+              #incomechart(style='width: 100%; height: 400px;')
 
+          if expenses.length >0
+            .col
+              h3="Expense"  
 
-    h3="Your Net Saving is "+net
-    h4=message
+              script(type='text/javascript').
+                google.charts.load("current", {packages:["corechart"]});
+                google.charts.setOnLoadCallback(drawExpenseChart);
+                function drawExpenseChart() {
+                  const expenses = !{JSON.stringify(expenses)}
+                var data = google.visualization.arrayToDataTable([["Category", "Amount"],...expenses]);
+                var options = {
+                pieHole: 0.4,
+                backgroundColor: 'transparent',
+                legend: 'none',
+                pieSliceText: 'label',
+                pieStartAngle: 29,
+                chartArea: {
+                  width: '100%',
+                  height: '100%'
+                },
+                theme: 'material'
+                };
+                var chart = new google.visualization.PieChart(document.getElementById('expensechart'));
+                chart.draw(data, options);
+                }
+              #expensechart(style='width: 100%; height: 400px;')
 
-    h3="Your Net Income is "+income_sum 
-    h3="Your Net Expense is "+expense_sum
-
-    h3="Your Incomes"
-    table.table
-      thead 
-        th="Category"
-        th="Amount" 
-      each income in incomes
-        tr
-          each column in income
-            td=column 
-      else 
-        tr No incomes 
-
-    h3="Your Expenses"
-    table.table
-      thead 
-        th="Category"
-        th="Amount" 
-      each expense in expenses
-        tr
-          each column in expense
-            td=column
-      else 
-        tr No expenses
-    
-    .pie-chart
-      h3="Income"
-      script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
-      script(type='text/javascript').
-        google.charts.load("current", {packages:["corechart"]});
-        google.charts.setOnLoadCallback(drawIncomeChart);
-        function drawIncomeChart() {
-          const incomes = !{JSON.stringify(incomes)}
-        var data = google.visualization.arrayToDataTable([["Category", "Amount"],...incomes]);
-        var options = {
-        pieHole: 0.4,
-        backgroundColor: 'transparent',
-        };
-        var chart = new google.visualization.PieChart(document.getElementById('incomechart'));
-        chart.draw(data, options);
-        }
-      #incomechart(style='width: 900px; height: 500px;')
-
-      h3="Expense"  
-
-      script(type='text/javascript').
-        google.charts.load("current", {packages:["corechart"]});
-        google.charts.setOnLoadCallback(drawExpenseChart);
-        function drawExpenseChart() {
-          const expenses = !{JSON.stringify(expenses)}
-        var data = google.visualization.arrayToDataTable([["Category", "Amount"],...expenses]);
-        var options = {
-        pieHole: 0.4,
-        backgroundColor: 'transparent',
-        };
-        var chart = new google.visualization.PieChart(document.getElementById('expensechart'));
-        chart.draw(data, options);
-        }
-      #expensechart(style='width: 900px; height: 500px;')
-
-    
+        
 

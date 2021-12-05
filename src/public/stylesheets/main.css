@@ -12,6 +12,7 @@ h1{
   color:bisque;
 }
 
+
 button{
   border-radius: 2px;
   border: 0px;
@@ -41,6 +42,14 @@ body h3{
 
 .dark-mode h3{
   color:white; 
+}
+
+body h4{
+  color:black;
+}
+
+.dark-mode h4{
+  color:white;
 }
 
 body {
@@ -292,6 +301,7 @@ a.white {
 .summary p,
 .summary h2,
 .summary h3,
+.summary h4,
 table.table {
   color: #fff;
 }
