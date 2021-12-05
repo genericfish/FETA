@@ -38,7 +38,7 @@ module.exports = view => {
                     const id = transaction.id
                     const dateObj = date.toDate()
 
-                    transactions.push([id, "expense", new Money(amount).Display, dateObj.toDateString(), note, category.id, date, RFC3339(dateObj)])
+                    transactions.push([id, "expense", new Money(-amount).Display, dateObj.toDateString(), note, category.id, date, RFC3339(dateObj)])
                 })
             }
 

@@ -179,7 +179,7 @@ class User {
             note: note
         }
 
-        return await this.savings.doc(name).set(goal, { merge: true })
+        return await this.amortizations.doc(name).set(goal, { merge: true })
     }
 
     // Modifies goal in a given category and gives it new data

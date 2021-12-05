@@ -169,7 +169,7 @@ block content
                 h5(class="modal-title" id="editItemModalLabel") Edit Item
                 button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
               .modal-body
-                form(class="add-NMTtransaction-form" action="/transactions/editItem" method="post")
+                form(class="edit-item-form" action="/transactions/editItem" method="post")
                   .mb-3.row
                     .col-3         
                       label.col-form-label(for=`name-${idx}`) Name 
@@ -194,7 +194,7 @@ block content
                 button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
               .modal-body
                 h3="Are you sure you want to delete this NMT item?"
-                form(class="remove-NMTtransaction-form" action="/transactions/removeItem" method="post")
+                form(class="remove-item-form" action="/transactions/removeItem" method="post")
                   input(type="hidden" name="name" value=items[0])
                   input.btn-fancy(type="submit" value="Confirm")
       
