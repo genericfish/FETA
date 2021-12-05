@@ -77,7 +77,8 @@ body {
 
 .transaction-page,
 .dashboard-page,
-.statistics-page {
+.statistics-page,
+.goal-page {
   margin-top: 10em;
   width: 100%;
   max-width: 996px;
