@@ -5,7 +5,7 @@ const path = require("path")
 const router = express.Router()
 
 const { Database } = require(path.join(__basedir, "backend", "firestore"))
-const { anyEmpty } = require(path.join(__basedir, "backend", "utils"))
+const { anyEmpty, login, flash } = require(path.join(__basedir, "backend", "utils"))
 
 module.exports = view => {
     router
@@ -26,23 +26,15 @@ module.exports = view => {
             const { email, password } = req.body
 
             // Check to see if any field was left blank
-            if (anyEmpty(email, password)) {
-                req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/login"))
-            }
+            if (anyEmpty(email, password))
+                return flash(req, res, "/login", "Please fill out all fields")
 
             const isValid = await Database.verifyCredentials(email, password)
 
-            if (isValid) {
-                // TODO: Make token for user validation instead of setting email
-                req.session.loggedIn = true
-                req.session.email = email
+            if (isValid)
+                return login(req, res, email, "/dashboard")
 
-                req.session.save(_ => res.redirect("/dashboard"))
-            } else {
-                req.session.error = "Invalid email or password"
-                return req.session.save(_ => res.redirect("/login"))
-            }
+            return flash(req, res, "/login", "Invalid email or password")
         })
     return router
 }

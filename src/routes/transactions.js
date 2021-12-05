@@ -3,7 +3,7 @@
 const express = require("express")
 const path = require("path")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
-const { Money, RFC3339, anyEmpty } = require(path.join(__basedir, "backend", "utils"))
+const { Money, RFC3339, anyEmpty, dateString } = require(path.join(__basedir, "backend", "utils"))
 const router = express.Router()
 
 module.exports = view => {
@@ -22,11 +22,11 @@ module.exports = view => {
                 let incomeList = await user.getIncomeTransactions(category.id)
 
                 incomeList.forEach(transaction => {
-                    const {amount, date, note} = transaction.data()
+                    const { amount, date, note } = transaction.data()
                     const id = transaction.id
                     const dateObj = date.toDate()
 
-                    transactions.push([id, "income", new Money(amount).Display, dateObj.toDateString(), note, category.id, date, RFC3339(dateObj)])
+                    transactions.push([id, "income", new Money(amount).Display, dateString(dateObj), note, category.id, date, RFC3339(dateObj)])
                 })
             }
 
@@ -34,11 +34,11 @@ module.exports = view => {
                 let expenseList = await user.getExpensesTransactions(category.id)
 
                 expenseList.forEach(transaction => {
-                    const {amount, date, note} = transaction.data()
+                    const { amount, date, note } = transaction.data()
                     const id = transaction.id
                     const dateObj = date.toDate()
 
-                    transactions.push([id, "expense", new Money(-amount).Display, dateObj.toDateString(), note, category.id, date, RFC3339(dateObj)])
+                    transactions.push([id, "expense", new Money(-amount).Display, dateString(dateObj), note, category.id, date, RFC3339(dateObj)])
                 })
             }
 
@@ -57,7 +57,7 @@ module.exports = view => {
                     const { amount, date, note } = transaction.data()
                     const dateObj = date.toDate()
 
-                    transactionsNM.push([transaction.id, amount, dateObj.toDateString(), note, item.id, date, RFC3339(dateObj)])
+                    transactionsNM.push([transaction.id, amount, dateString(dateObj), note, item.id, date, RFC3339(dateObj)])
                 })
             }
 

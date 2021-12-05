@@ -2,6 +2,7 @@
 
 const express = require("express")
 const session = require("express-session")
+const cookie = require("cookie-parser")
 const pug = require("pug")
 const path = require("path")
 const glob = require("glob")
@@ -10,6 +11,7 @@ const { FirestoreStore } = require("@google-cloud/connect-firestore")
 const router = express.Router()
 
 router
+    .use(cookie())
     .use(
         session({
             secret: process.env.SESSION_SECRET || "fetacheese",

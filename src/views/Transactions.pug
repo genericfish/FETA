@@ -35,7 +35,7 @@ block content
                   button.btn.btn-primary(type="button" data-bs-toggle="modal" data-bs-target=`#editModal${idx}`) Edit
             else
               tr No transactions
-    
+
     if items.length == 0
       .row.spacer
         .summary
@@ -68,11 +68,7 @@ block content
             else 
               tr No Items
   
-    if NMTs.length == 0
-      .row.spacer
-        .col-12
-          h3 You don't have any NMT Transactions
-    else 
+    if NMTs.length > 0
       .row.spacer
         .col-12
           h3 Non-monetary Transactions
