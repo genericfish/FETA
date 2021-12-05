@@ -1,0 +1,13 @@
+button.btn-fancy(type="button" data-bs-toggle="modal" data-bs-target="#removeNMTModal") Remove a NMT
+
+.modal.fade#removeNMTModal(tabindex="-1" aria-labelledby="removeNMTModalLabel" aria-hidden="true")
+    .modal-dialog.modal-dialog-centered
+        .modal-content
+            .modal-header
+                h5.modal-title#removeNMTModalLabel Remove a NMT
+                button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+            .modal-body
+                form.remove-NMT-form(action="/transaction/removeItem" method="post")
+                    .mb-3
+                        input.form-control(type="text" name="name" placeholder="name")
+                    input.btn-fancy(type="submit" value="Remove NMT")
