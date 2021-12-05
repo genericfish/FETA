@@ -10,8 +10,8 @@ button.btn-fancy(type="button" data-bs-toggle="modal" data-bs-target="#addTransa
                 form.add-transaction-form(action="/dashboard/add" method="post")
                     .mb-3
                         select.form-select(name="type")
-                            option(value="income") Income
-                            option(value="income") Expense
+                            option(value="income" selected="selected") Income
+                            option(value="expense") Expense
                     .mb-3
                         input.form-control(type="text" name="category" placeholder="category")
                     .mb-3

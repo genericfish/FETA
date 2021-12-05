@@ -48,11 +48,12 @@ module.exports = view => {
             let end_balance = total[0]
             let start_balance = total[1]
             let gain = end_balance - start_balance
-            let percent_gain = (gain/start_balance)*100
-            if (start_balance==0) 
-                percent_gain = undefined
+            let percent_gain = undefined
 
-            let a=[]
+            if (start_balance != 0)
+                percent_gain = Math.round((gain / start_balance) * 100)
+
+            let a = []
             for (let i = 0; i < income_categories.length; i++) {
                 let income_array = await user.getIncomeTransactions(income_categories[i].id, getLastMonth(), new Date())
                 for (let j = 0; j < income_array.length; j++) {

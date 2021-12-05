@@ -4,93 +4,146 @@ block content
   include templates/nav.pug
   .dashboard-page 
     h1="Dashboard"
-    include templates/add-transaction.pug
-    h3="Your Net Saving is "+net 
-    h1=message
+    .row.spacer
+      .summary
+        h2.title Your Month at a Glance
+        .item
+          h3=net
+          p Net Balance
+        .separator
+        .item
+          h3=gain
+          p Saved this month
+        if percent_gain
+          .separator
+          .item
+            h3=percent_gain + "%"
+            if gain < 0
+              p Decrease in savings
+            else
+              p Increase in savings
+        .separator
+        .item
+          h3 Monthly Change
+          .row.justify-content-center
+            .col-6
+              #columnchart(style='width: 100%; height: 300px;')
+        .separator
+        .item
+          h3=message
+    .row.justify-content-center.spacer
+      h3="Recent Transactions"
 
-    h3="Your monthly gain is "+gain 
-    if percent_gain
-      h3="You gained "+percent_gain+"%"
-    
-    h3="Your Transactions this Month"
+      table.table
+        thead
+          tr
+            th="Amount"
+            th="Date"
+            th="Note"
+            th="Category"
+        each transaction,idx in transactions 
+          tr
+            each field, index in transaction
+              if index > 1 && index < 6
+                td=field
+        else
+          tr No transactions
 
-    table.table
-      thead 
-        th="Amount"
-        th="Date" 
-        th="Note"
-        th="Category"
-      each transaction,idx in transactions 
-        tr 
-          each field, index in transaction
-            if index > 1 && index < 6
-              td=field
-      else 
-        tr No transactions
+      .col-3
+        include templates/add-transaction.pug
+    .row.spacer
+      .pie-chart
+        .row
+          .col
+            h3="Income"
+            #incomechart(style='width: 100%; height: 500px;')
+          .col
+            h3="Expenses"
+            #expensechart(style='width: 100%; height: 500px;')
 
-    .pie-chart
-      h3="Income"
-      script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
-      script(type='text/javascript').
-        google.charts.load("current", {packages:["corechart"]});
-        google.charts.setOnLoadCallback(drawIncomeChart);
-        function drawIncomeChart() {
-          const incomes = !{JSON.stringify(incomes)}
-        var data = google.visualization.arrayToDataTable([["Category", "Amount"],...incomes]);
-        var options = {
-        pieHole: 0.4,
-        backgroundColor: 'transparent',
-        };
-        var chart = new google.visualization.PieChart(document.getElementById('incomechart'));
-        chart.draw(data, options);
-        }
-      #incomechart(style='width: 900px; height: 500px;')
+block scripts
+  script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
+  script(type='text/javascript').
+    google.charts.load("current", {packages:["corechart", "bar"]});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      const total = !{JSON.stringify(total)}
+      var data = google.visualization.arrayToDataTable(total);
+      var view = new google.visualization.DataView(data);
 
-      h3="Expense"  
+      view.setColumns([0, 1,
+        {
+          calc: "stringify",
+          sourceColumn: 1,
+          type: "string",
+          role: "annotation"
+        },
+        2])
 
-      script(type='text/javascript').
-        google.charts.load("current", {packages:["corechart"]});
-        google.charts.setOnLoadCallback(drawExpenseChart);
-        function drawExpenseChart() {
-          const expenses = !{JSON.stringify(expenses)}
-        var data = google.visualization.arrayToDataTable([["Category", "Amount"],...expenses]);
-        var options = {
-        pieHole: 0.4,
-        backgroundColor: 'transparent',
-        };
-        var chart = new google.visualization.PieChart(document.getElementById('expensechart'));
-        chart.draw(data, options);
-        }
-      #expensechart(style='width: 900px; height: 500px;')
-
-    .bar-graph
-      script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
-      script(type='text/javascript').
-        google.charts.load("current", {packages:["corechart"]});
-        google.charts.setOnLoadCallback(drawChart);
-        function drawChart() {
-          const total = !{JSON.stringify(total)}
-        var data = google.visualization.arrayToDataTable(total);
-        var view = new google.visualization.DataView(data);
-        view.setColumns([0, 1,
-        { calc: "stringify",
-        sourceColumn: 1,
-        type: "string",
-        role: "annotation" },
-        2]);
-        var options = {
-        backgroundColor: 'transparent',
-        title: "Monthly Totals",
-        width: 600,
-        height: 400,
-        bar: {groupWidth: "95%"},
+      var options = {
+        backgroundColor: "transparent",
+        bar: { groupWidth: "40%" },
         legend: { position: "none" },
-        };
-        var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
-        chart.draw(view, options);
-        }
-      #barchart_values(style='width: 900px; height: 300px;')
-    
-        
+        chartArea: {
+          backgroundColor: "transparent"
+        },
+        hAxis: {
+          gridlines: { color: "transparent" },
+          textStyle: {
+            color: "white",
+            fontSize: 18,
+            fontName: "Lato"
+          },
+          titleTextStyle: { color: "transparent" }
+        },
+        vAxis: {
+          gridlines: { color: "transparent" },
+          textStyle: { color: "transparent" }
+        },
+      }
 
-  
+      var chart = new google.charts.Bar(document.getElementById("columnchart"))
+
+      chart.draw(view, google.charts.Bar.convertOptions(options))
+    }
+    google.charts.setOnLoadCallback(drawIncomeChart);
+    const chartOptions = {
+        pieHole: 0.4,
+        backgroundColor: 'transparent',
+        legend: 'none',
+        pieSliceText: 'label',
+        pieStartAngle: 29,
+        chartArea: {
+          width: '100%',
+          height: '80%'
+        }
+      }
+    function drawIncomeChart() {
+      const incomes = !{JSON.stringify(incomes)}
+
+      var data = google.visualization.arrayToDataTable([
+        ["Category", "Amount"],
+        ...incomes]
+      )
+
+      var chart = new google.visualization.PieChart(document.getElementById('incomechart'))
+      chart.draw(data, chartOptions);
+    }
+    google.charts.setOnLoadCallback(drawExpenseChart);
+    function drawExpenseChart() {
+      const expenses = !{JSON.stringify(expenses)}
+      var data = google.visualization.arrayToDataTable([
+        ["Category", "Amount"],
+        ...expenses]
+      )
+
+      var chart = new google.visualization.PieChart(document.getElementById('expensechart'))
+
+      chart.draw(data, chartOptions);
+    }
+
+    $(window).resize(_ => {
+      drawExpenseChart()
+      drawIncomeChart()
+      drawChart()
+    })
