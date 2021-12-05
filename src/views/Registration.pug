@@ -2,13 +2,10 @@ extends templates/header.pug
 
 block content
     .login-page
-        h1="FETA"
-        include templates/toggle.pug
         .form
             .login
                 .login-header
-                    h3="Registration"
-                    p="Please Create Login Credentials."
+                    h3 Register an Account
                     if error
                         p=error
             form(class="login-form" action="/registration" method="post")
@@ -18,5 +15,6 @@ block content
                 input(type="password" name="password" placeholder="password")
                 input(type="password" name="confirm" placeholder="confirm password")
                 input(type="submit" value="Register")
-                p(class="message")="Already have an account? "
-                    a(href="/login")="Login Here!"
+            .message
+                p Already have an account? 
+                    a(href="/login") Sign in.

@@ -2,18 +2,16 @@ extends templates/header.pug
 
 block content
     .login-page
-        h1="FETA"
-        include templates/toggle.pug
         .form
             .login
                 .login-header
-                    h3="LOGIN"
-                    p="Please enter your credentials to login."
+                    h3 Sign in to FETA
                     if error
-                        p=error
+                        p.error=error
             form(class="login-form" action="/login" method="post")
                 input(type="email" name="email" placeholder="example@feta.cheese")
                 input(type="password" name="password" placeholder="password")
                 input(type="submit" value="Login")
-                p(class="message")="Not registered? "
-                    a(href="/registration")="Create an account!"
+            .message
+                p Not registered? 
+                    a(href="/registration") Create an account!
