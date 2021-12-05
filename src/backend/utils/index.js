@@ -2,7 +2,11 @@
 
 class Money {
     constructor (value) {
-        this.value = value
+        // Regex from https://stackoverflow.com/questions/354044
+        if (typeof value === "string")
+            value = value.match(/(?:\d{1,3},)*\d{1,3}(?:\.\d+)?/)
+
+        this.value = parseFloat(value)
     }
 
     get Display() {
@@ -34,4 +38,8 @@ function getLastMonth() {
     return begin
 }
 
-module.exports = { Money: Money, getLastMonth: getLastMonth }
+function RFC3339(date) {
+    return date.toISOString().split('T')[0]
+}
+
+module.exports = { Money: Money, getLastMonth: getLastMonth, RFC3339: RFC3339 }

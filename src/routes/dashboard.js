@@ -13,8 +13,9 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const user = new User(req.session.email)
-            let income_categories = await user.getIncomeCategories()
-            let expense_categories = await user.getExpensesCategories()
+            const income_categories = await user.getIncomeCategories()
+            const expense_categories = await user.getExpensesCategories()
+
             let income_sum = 0
             let expense_sum = 0
             let net = 0
@@ -51,7 +52,7 @@ module.exports = view => {
             let percent_gain = undefined
 
             if (start_balance != 0)
-                percent_gain = Math.round((gain / start_balance) * 100)
+                percent_gain = Math.round((gain / Math.abs(start_balance)) * 100)
 
             let a = []
             for (let i = 0; i < income_categories.length; i++) {
@@ -88,18 +89,26 @@ module.exports = view => {
                     let income_amount = income_array[j].data().amount
                     income += income_amount
                 }
-                b.push([income_categories[i].id, income])
+
+                if (income > 0)
+                    b.push([income_categories[i].id, income])
 
             }
             for (let i = 0; i < expense_categories.length; i++) {
                 let expense_array = await user.getExpensesTransactions(expense_categories[i].id, getLastMonth(), new Date())
                 let expense = 0
+
                 for (let j = 0; j < expense_array.length; j++) {
                     let expense_amount = expense_array[j].data().amount
                     expense += expense_amount
                 }
-                c.push([expense_categories[i].id, expense])
+
+                if (expense > 0)
+                    c.push([expense_categories[i].id, expense])
             }
+
+            let categories = await user.getMonetaryCategories()
+            categories = Array.from(categories).map(category => category.id)
 
             res.send(view({
                 header: "Dashboard",
@@ -112,34 +121,9 @@ module.exports = view => {
                 percent_gain: percent_gain,
                 transactions: a,
                 incomes: b,
-                expenses: c
+                expenses: c,
+                categories: categories
             }))
-        })
-        .post("/add", async (req, res) => {
-            if (req.session.loggedIn !== true)
-                return res.redirect("/login")
-
-            const { type, category, amount, date, note } = req.body
-
-            const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
-            const user = new User(req.session.email)
-
-            // Check to see if any field was left blank
-            if (anyEmpty(type, category, amount, date)) {
-                req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/dashboard"))
-            }
-
-            if (req.body.type.toLowerCase() == "income") {
-                await user.addIncome(req.body.category, new Date(req.body.date), parseInt(req.body.amount), req.body.note)
-            } else if (req.body.type.toLowerCase() == "expense") {
-                await user.addExpense(req.body.category, new Date(req.body.date), parseInt(req.body.amount), req.body.note)
-            } else {
-                req.session.error = "Please enter a valid type of transaction"
-                return req.session.save(_ => res.redirect("/dashboard"))
-            }
-
-            return res.redirect("/dashboard")
         })
 
     return router

@@ -2,9 +2,8 @@
 
 const express = require("express")
 const path = require("path")
-const { getSystemErrorMap } = require("util")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
-const { Money } = require(path.join(__basedir, "backend", "utils"))
+const { Money, RFC3339 } = require(path.join(__basedir, "backend", "utils"))
 const router = express.Router()
 
 module.exports = view => {
@@ -14,8 +13,9 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const user = new User(req.session.email)
-            let income_categories = await user.getIncomeCategories()
-            let expense_categories = await user.getExpensesCategories()
+            const income_categories = await user.getIncomeCategories()
+            const expense_categories = await user.getExpensesCategories()
+
             let a = []
             for (let i = 0; i < income_categories.length; i++) {
                 let income_array = await user.getIncomeTransactions(income_categories[i].id)
@@ -25,7 +25,7 @@ module.exports = view => {
                     let note = income_array[j].data().note
                     let category = income_categories[i].id
                     let id = income_array[j].id
-                    a.push([id, "income", new Money(income).Display, date, note, category, income_array[j].data().date])
+                    a.push([id, "income", new Money(income).Display, date, note, category, income_array[j].data().date, RFC3339(income_array[j].data().date.toDate())])
                 }
             }
 
@@ -37,7 +37,7 @@ module.exports = view => {
                     let note = expense_array[j].data().note
                     let category = expense_categories[i].id
                     let id = expense_array[j].id
-                    a.push([id, "expense", new Money(expense).Display, date, note, category, expense_array[j].data().date])
+                    a.push([id, "expense", new Money(expense).Display, date, note, category, expense_array[j].data().date, RFC3339(expense_array[j].data().date.toDate())])
                 }
             }
 
@@ -69,11 +69,15 @@ module.exports = view => {
             b.sort(function (a, b) { return b[5] - a[5] })
             items.sort(function(a, b) {return a[0] - b[0]})
 
+            let categories = await user.getMonetaryCategories()
+            categories = Array.from(categories).map(category => category.id)
+
             res.send(view({
                 header: "Transactions",
                 transactions: a, 
                 NMTs: b,
-                items: items
+                items: items,
+                categories: categories
             }))
         })
         .post("/add", async (req, res) => {
@@ -86,19 +90,19 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(type, category, amount, date)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
             if (req.body.type.toLowerCase() == "income") {
-                await user.addIncome(req.body.category, new Date(req.body.date), parseInt(req.body.amount), req.body.note)
+                await user.addIncome(category, new Date(date), parseInt(amount), note)
             } else if (req.body.type.toLowerCase() == "expense") {
-                await user.addExpense(req.body.category, new Date(req.body.date), parseInt(req.body.amount), req.body.note)
+                await user.addExpense(category, new Date(date), parseInt(amount), note)
             } else {
                 req.session.error = "Please enter a valid type of transaction"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/remove", async (req, res) => {
             if (req.session.loggedIn !== true)
@@ -110,39 +114,39 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(ID, type, category)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
             if (req.body.type == "expense") {
-                await user.removeExpense(req.body.category, req.body.ID)
+                await user.removeExpense(category, ID)
             }
             if (req.body.type == "income") {
-                await user.removeIncome(req.body.category, req.body.ID)
+                await user.removeIncome(category, ID)
             }
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/edit", async (req, res) => {
             if (req.session.loggedIn !== true)
                 return res.redirect("/login")
 
-            const { ID, type, category, date, amount } = req.body
+            const { ID, type, category, date, amount, note } = req.body
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(ID, type, category, date, amount)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            const transaction = { date: new Date(req.body.date), amount: parseInt(req.body.amount), note: req.body.note }
+            const transaction = { date: new Date(date), amount: amount, note: note }
 
-            if (req.body.type == "expense") {
-                await user.modifyExpense(req.body.category, req.body.ID, transaction)
+            if (type == "expense") {
+                await user.modifyExpense(category, ID, transaction)
             }
-            if (req.body.type == "income") {
-                await user.modifyIncome(req.body.category, req.body.ID, transaction)
+            if (type == "income") {
+                await user.modifyIncome(category, ID, transaction)
             }
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/addItem", async (req, res) => {
             if (req.session.loggedIn !== true)
@@ -154,12 +158,12 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(name)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
             await user.addNMT(req.body.name, req.body.note)
 
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/editItem", async (req, res) => {
             if (req.session.loggedIn !== true)
@@ -171,14 +175,14 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(name, amount)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
             const NMT = { current: parseInt(req.body.amount), note: req.body.note }
 
             await user.modifyNMT(req.body.name, NMT)
 
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/removeItem", async (req, res) => {
             if (req.session.loggedIn !== true)
@@ -190,12 +194,12 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(name)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
             
             await user.deleteNMT(req.body.name)
 
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/removeNMT", async (req, res) => {
             if (req.session.loggedIn !== true)
@@ -207,11 +211,11 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(item, ID)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
             await user.removeNMTTransaction(req.body.item, req.body.ID)
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/editNMT", async (req, res) => {
             if (req.session.loggedIn !== true)
@@ -223,13 +227,13 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(item, ID, date, note, amount)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
             const NMTtransaction = { amount: parseInt(req.body.amount), date: new Date(req.body.date), note: req.body.note}  
             await user.modifyNMTTransaction(req.body.item, req.body.ID, NMTtransaction)
             
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/addNMT", async (req, res) => {
             if (req.session.loggedIn !== true)
@@ -243,13 +247,13 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(item, amount, date)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
             
 
             await user.addNMTTransaction(req.body.item, parseInt(req.body.amount), new Date(req.body.date), req.body.note)
 
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
 
     return router
