@@ -16,55 +16,53 @@ module.exports = view => {
             const income_categories = await user.getIncomeCategories()
             const expense_categories = await user.getExpensesCategories()
 
-            let a = []
-            for (let i = 0; i < income_categories.length; i++) {
-                let income_array = await user.getIncomeTransactions(income_categories[i].id)
-                for (let j = 0; j < income_array.length; j++) {
-                    let income = income_array[j].data().amount
-                    let date = income_array[j].data().date.toDate().toDateString()
-                    let note = income_array[j].data().note
-                    let category = income_categories[i].id
-                    let id = income_array[j].id
-                    a.push([id, "income", new Money(income).Display, date, note, category, income_array[j].data().date, RFC3339(income_array[j].data().date.toDate())])
-                }
-            }
+            let transactions = []
 
-            for (let i = 0; i < expense_categories.length; i++) {
-                let expense_array = await user.getExpensesTransactions(expense_categories[i].id)
-                for (let j = 0; j < expense_array.length; j++) {
-                    let expense = -expense_array[j].data().amount
-                    let date = expense_array[j].data().date.toDate().toDateString()
-                    let note = expense_array[j].data().note
-                    let category = expense_categories[i].id
-                    let id = expense_array[j].id
-                    a.push([id, "expense", new Money(expense).Display, date, note, category, expense_array[j].data().date, RFC3339(expense_array[j].data().date.toDate())])
-                }
-            }
+            for (let category of income_categories) {
+                let incomeList = await user.getIncomeTransactions(category.id)
 
-            let item_list = await user.getNMTItems()
-            let b = []
-            let items = []
-
-            for (let i = 0; i < item_list.length; i++) {
-                let item = item_list[i].id
-                let amount = item_list[i].data().current
-                let note = item_list[i].data().note
-                items.push([item, amount, note])
-            }
-
-            for (let i = 0; i < item_list.length; i++) {
-                let NMT_array = await user.getNMTTransactions(item_list[i].id)
-                for (let j = 0; j < NMT_array.length; j++) {
-                    const { amount, date, note } = NMT_array[j].data()
+                incomeList.forEach(transaction => {
+                    const {amount, date, note} = transaction.data()
+                    const id = transaction.id
                     const dateObj = date.toDate()
-                    let item = item_list[i].id
-                    let id = NMT_array[j].id
-                    b.push([id, amount, dateObj.toDateString(), note, item, date, RFC3339(dateObj)])
-                }
+
+                    transactions.push([id, "income", new Money(amount).Display, dateObj.toDateString(), note, category.id, date, RFC3339(dateObj)])
+                })
             }
 
-            a.sort((a, b) => { return b[6] - a[6] })
-            b.sort((a, b) => { return b[5] - a[5] })
+            for (let category of expense_categories) {
+                let expenseList = await user.getExpensesTransactions(category.id)
+
+                expenseList.forEach(transaction => {
+                    const {amount, date, note} = transaction.data()
+                    const id = transaction.id
+                    const dateObj = date.toDate()
+
+                    transactions.push([id, "expense", new Money(amount).Display, dateObj.toDateString(), note, category.id, date, RFC3339(dateObj)])
+                })
+            }
+
+            let NMTItems = await user.getNMTItems()
+            let items = []
+            let transactionsNM = []
+
+            for (let item of NMTItems) {
+                const { current, note } = item.data()
+
+                items.push([item.id, current, note])
+
+                const NMTTransactions = await user.getNMTTransactions(item.id)
+
+                NMTTransactions.forEach(transaction => {
+                    const { amount, date, note } = transaction.data()
+                    const dateObj = date.toDate()
+
+                    transactionsNM.push([transaction.id, amount, dateObj.toDateString(), note, item.id, date, RFC3339(dateObj)])
+                })
+            }
+
+            transactions.sort((a, b) => { return b[6] - a[6] })
+            transactionsNM.sort((a, b) => { return b[5] - a[5] })
             items.sort((a, b) => { return a[0] - b[0] })
 
             let categories = await user.getMonetaryCategories()
@@ -74,8 +72,8 @@ module.exports = view => {
 
             res.send(view({
                 header: "Transactions",
-                transactions: a,
-                NMTs: b,
+                transactions: transactions,
+                NMTs: transactionsNM,
                 items: items,
                 categories: categories,
                 name: name.data().firstname
@@ -93,13 +91,16 @@ module.exports = view => {
                 return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            if (req.body.type.toLowerCase() == "income") {
-                await user.addIncome(category, new Date(date), parseInt(amount), note)
-            } else if (req.body.type.toLowerCase() == "expense") {
-                await user.addExpense(category, new Date(date), parseInt(amount), note)
-            } else {
-                req.session.error = "Please enter a valid type of transaction"
-                return req.session.save(_ => res.redirect("/transactions"))
+            switch (type.toLowerCase()) {
+                case "income":
+                    await user.addIncome(category, new Date(date), parseInt(amount), note)
+                    break
+                case "expense":
+                    await user.addExpense(category, new Date(date), parseInt(amount), note)
+                    break
+                default:
+                    req.session.error = "Please enter a valid type of transaction"
+                    return req.session.save(_ => res.redirect("/transactions"))
             }
 
             return res.redirect("/transactions")
@@ -116,12 +117,15 @@ module.exports = view => {
                 return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            if (req.body.type == "expense") {
-                await user.removeExpense(category, ID)
+            switch (type.toLowerCase()) {
+                case "expense":
+                    await user.removeExpense(category, ID)
+                    break
+                case "income":
+                    await user.removeIncome(category, ID)
+                    break
             }
-            if (req.body.type == "income") {
-                await user.removeIncome(category, ID)
-            }
+
             return res.redirect("/transactions")
         })
         .post("/edit", async (req, res) => {
@@ -138,12 +142,15 @@ module.exports = view => {
 
             const transaction = { date: new Date(date), amount: amount, note: note }
 
-            if (type == "expense") {
-                await user.modifyExpense(category, ID, transaction)
+            switch (type.toLowerCase()) {
+                case "expense":
+                    await user.modifyExpense(category, ID, transaction)
+                    break
+                case "income":
+                    await user.modifyIncome(category, ID, transaction)
+                    break
             }
-            if (type == "income") {
-                await user.modifyIncome(category, ID, transaction)
-            }
+
             return res.redirect("/transactions")
         })
         .post("/addItem", async (req, res) => {
@@ -158,7 +165,7 @@ module.exports = view => {
                 return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            await user.addNMT(req.body.name, req.body.note)
+            await user.addNMT(name, note)
 
             return res.redirect("/transactions")
         })
@@ -174,9 +181,9 @@ module.exports = view => {
                 return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            const NMT = { current: parseInt(req.body.amount), note: req.body.note }
+            const NMT = { current: parseInt(amount), note: note }
 
-            await user.modifyNMT(req.body.name, NMT)
+            await user.modifyNMT(name, NMT)
 
             return res.redirect("/transactions")
         })
@@ -192,7 +199,7 @@ module.exports = view => {
                 return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            await user.deleteNMT(req.body.name)
+            await user.deleteNMT(name)
 
             return res.redirect("/transactions")
         })
@@ -241,7 +248,6 @@ module.exports = view => {
                 req.session.error = "Please fill out all fields"
                 return req.session.save(_ => res.redirect("/transactions"))
             }
-
 
             await user.addNMTTransaction(item, parseInt(amount), new Date(date), note)
 

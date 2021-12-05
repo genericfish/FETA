@@ -46,7 +46,7 @@ block content
     else
       .row.spacer
         .col-12
-          h3 NMT Items
+          h3 Non-monetary Items
           include templates/add-NMT.pug
       .row.spacer
         .col-12
@@ -68,14 +68,14 @@ block content
             else 
               tr No Items
   
-    if NMTs.length == 0   
+    if NMTs.length == 0
       .row.spacer
         .col-12
           h3 You don't have any NMT Transactions
     else 
       .row.spacer
         .col-12
-          h3 NMT Transactions
+          h3 Non-monetary Transactions
           table.table
             thead 
               th Amount
