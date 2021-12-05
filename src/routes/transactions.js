@@ -3,7 +3,7 @@
 const express = require("express")
 const path = require("path")
 const { User } = require(path.join(__basedir, "backend", "firestore"))
-const { Money } = require(path.join(__basedir, "backend", "utils"))
+const { Money, RFC3339 } = require(path.join(__basedir, "backend", "utils"))
 const router = express.Router()
 
 module.exports = view => {
@@ -13,8 +13,9 @@ module.exports = view => {
                 return res.redirect("/login")
 
             const user = new User(req.session.email)
-            let income_categories = await user.getIncomeCategories()
-            let expense_categories = await user.getExpensesCategories()
+            const income_categories = await user.getIncomeCategories()
+            const expense_categories = await user.getExpensesCategories()
+
             let a = []
             for (let i = 0; i < income_categories.length; i++) {
                 let income_array = await user.getIncomeTransactions(income_categories[i].id)
@@ -24,7 +25,7 @@ module.exports = view => {
                     let note = income_array[j].data().note
                     let category = income_categories[i].id
                     let id = income_array[j].id
-                    a.push([id, "income", new Money(income).Display, date, note, category, income_array[j].data().date])
+                    a.push([id, "income", new Money(income).Display, date, note, category, income_array[j].data().date, RFC3339(income_array[j].data().date.toDate())])
                 }
             }
 
@@ -36,13 +37,19 @@ module.exports = view => {
                     let note = expense_array[j].data().note
                     let category = expense_categories[i].id
                     let id = expense_array[j].id
-                    a.push([id, "expense", new Money(expense).Display, date, note, category, expense_array[j].data().date])
+                    a.push([id, "expense", new Money(expense).Display, date, note, category, expense_array[j].data().date, RFC3339(expense_array[j].data().date.toDate())])
                 }
             }
+
             a.sort(function (a, b) { return b[6] - a[6] })
+
+            let categories = await user.getMonetaryCategories()
+            categories = Array.from(categories).map(category => category.id)
+
             res.send(view({
                 header: "Transactions",
-                transactions: a
+                transactions: a,
+                categories: categories
             }))
         })
         .post("/add", async (req, res) => {
@@ -55,19 +62,19 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(type, category, amount, date)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
             if (req.body.type.toLowerCase() == "income") {
-                await user.addIncome(req.body.category, new Date(req.body.date), parseInt(req.body.amount), req.body.note)
+                await user.addIncome(category, new Date(date), parseInt(amount), note)
             } else if (req.body.type.toLowerCase() == "expense") {
-                await user.addExpense(req.body.category, new Date(req.body.date), parseInt(req.body.amount), req.body.note)
+                await user.addExpense(category, new Date(date), parseInt(amount), note)
             } else {
                 req.session.error = "Please enter a valid type of transaction"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/remove", async (req, res) => {
             if (req.session.loggedIn !== true)
@@ -79,39 +86,39 @@ module.exports = view => {
             // Check to see if any field was left blank
             if (anyEmpty(ID, type, category)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
             if (req.body.type == "expense") {
-                await user.removeExpense(req.body.category, req.body.ID)
+                await user.removeExpense(category, ID)
             }
             if (req.body.type == "income") {
-                await user.removeIncome(req.body.category, req.body.ID)
+                await user.removeIncome(category, ID)
             }
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
         .post("/edit", async (req, res) => {
             if (req.session.loggedIn !== true)
                 return res.redirect("/login")
 
-            const { ID, type, category, date, amount } = req.body
+            const { ID, type, category, date, amount, note } = req.body
             const anyEmpty = (...args) => Array.from(args).reduce((acc, cur) => acc |= cur === "", false)
             const user = new User(req.session.email)
             // Check to see if any field was left blank
             if (anyEmpty(ID, type, category, date, amount)) {
                 req.session.error = "Please fill out all fields"
-                return req.session.save(_ => res.redirect("/transaction"))
+                return req.session.save(_ => res.redirect("/transactions"))
             }
 
-            const transaction = { date: new Date(req.body.date), amount: parseInt(req.body.amount), note: req.body.note }
+            const transaction = { date: new Date(date), amount: amount, note: note }
 
-            if (req.body.type == "expense") {
-                await user.modifyExpense(req.body.category, req.body.ID, transaction)
+            if (type == "expense") {
+                await user.modifyExpense(category, ID, transaction)
             }
-            if (req.body.type == "income") {
-                await user.modifyIncome(req.body.category, req.body.ID, transaction)
+            if (type == "income") {
+                await user.modifyIncome(category, ID, transaction)
             }
-            return res.redirect("/transaction")
+            return res.redirect("/transactions")
         })
     return router
 }
