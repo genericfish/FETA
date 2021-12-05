@@ -5,13 +5,7 @@ block content
   .transaction-page
     h1="Transaction"
 
-    form(class="add-transaction-form" action="/transaction/add" method="post")
-      input(type="text" name="type" placeholder="income or expense")
-      input(type="text" name="category" placeholder="category")
-      input(type="amount" name="amount" placeholder="amount")
-      input(type="date" name="date" placeholder="yyyy-mm-dd")
-      input(type="note" name="note" placeholder="note")
-      input(type="submit" value="Add Transaction")
+    include templates/add-transaction.pug
 
     table.table
       thead 
@@ -27,14 +21,13 @@ block content
             if index > 1 && index < 6
               td=field
           td
-            button(type="button" class="btn btn-primary" data-toggle="modal" data-target=`#deleteModal${idx}`) Remove
-            .modal.fade(id=`deleteModal${idx}` tabIndex="-1" role="dialog" aria-hidden="true" aria-labelledby=`deleteModalLabel${idx}`)
-              .modal-dialog(role="document")
+            button.btn.btn-primary(type="button" data-bs-toggle="modal" data-bs-target=`#deleteModal${idx}`) Remove
+            .modal.fade(id=`deleteModal${idx}` tabindex="-1" aria-labelledby=`deleteModalLabel${idx}` aria-hidden="true")
+              .modal-dialog.modal-dialog-centered
                 .modal-content
                   .modal-header
                     h5(class="modal-title" id="deleteModalLabel") Remove Transaction
-                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
-                      span(aria-hidden="true") &times;
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
                   .modal-body
                     h3="Are you sure?"
                     form(class="remove-transaction-form" action="/transaction/remove" method="post")
@@ -43,14 +36,13 @@ block content
                       input(type="hidden" name="category" value=transaction[5])
                       input(type="submit" value="Remove")
           td
-            button(type="button" class="btn btn-primary" data-toggle="modal" data-target=`#editModal${idx}`) Edit
-            .modal.fade(id=`editModal${idx}` tabIndex="-1" role="dialog" aria-hidden="true" aria-labelledby=`editModalLabel${idx}`)
-              .modal-dialog(role="document")
+            button.btn.btn-primary(type="button" data-bs-toggle="modal" data-bs-target=`#editModal${idx}`) Edit
+            .modal.fade(id=`editModal${idx}` tabindex="-1" aria-labelledby=`editModalLabel${idx}` aria-hidden="true")
+              .modal-dialog.modal-dialog-centered
                 .modal-content
                   .modal-header
                     h5(class="modal-title" id="editModalLabel") Edit Transaction
-                    button(type="button" class="close" data-dismiss="modal" aria-label="Close")
-                      span(aria-hidden="true") &times;
+                    button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
                   .modal-body
                     form(class="edit-transaction-form" action="/transaction/edit" method="post")
                       input(type="hidden" name="ID" value=transaction[0])

@@ -2,54 +2,16 @@ nav.navbar.navbar-expand-lg.navbar-dark.navbar-custom.fixed-top
   .container
     a.navbar-brand.logo-text.page-scroll(href="/")
       h1 FETA
-    // Mobile Menu Toggle Button
-    include toggle.pug
-    button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarsExampleDefault' aria-controls='navbarsExampleDefault' aria-expanded='false' aria-label='Toggle navigation')
-      span.navbar-toggler-awesome.fas.fa-bars
-      span.navbar-toggler-awesome.fas.fa-times
-    // end of mobile menu toggle button
-    #navbarsExampleDefault.collapse.navbar-collapse
-      ul.navbar-nav.ml-auto
-        //- li.nav-item
-        //-   a.nav-link.page-scroll(href='')
-        //-     | HOME 
-        //-     span.sr-only (current)
+    button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation")
+      span.navbar-toggler-icon
+    #navbar.collapse.navbar-collapse
+      include toggle.pug
+      ul.navbar-nav.ms-auto
         li.nav-item
           a.nav-link.page-scroll(href='dashboard') Dashboard
         li.nav-item
           a.nav-link.page-scroll(href='statistics') Statistics
         li.nav-item
           a.nav-link.page-scroll(href='transaction') Transactions
-        //- Dropdown Menu
-        //- li.nav-item.dropdown
-        //-   a#navbarDropdown.nav-link.dropdown-toggle.page-scroll(href='#video' role='button' aria-haspopup='true' aria-expanded='false') VIDEO
-        //-   .dropdown-menu(aria-labelledby='navbarDropdown')
-        //-     a.dropdown-item(href='article-details.html')
-        //-       span.item-text ARTICLE DETAILS
-        //-     .dropdown-items-divide-hr
-        //-     a.dropdown-item(href='terms-conditions.html')
-        //-       span.item-text TERMS CONDITIONS
-        //-     .dropdown-items-divide-hr
-        //-     a.dropdown-item(href='privacy-policy.html')
-        //-       span.item-text PRIVACY POLIC
-      span.nav-item
-        a.btn-outline-sm(href='logout') Log Out
-  // end of container
-// end of navbar
-// end of navigation
-
-script(src='js/jquery.min.js')
-    // jQuery for Bootstrap's JavaScript plugins
-script(src='js/popper.min.js')
-    // Popper tooltip library for Bootstrap
-script(src='js/bootstrap.min.js')
-    // Bootstrap framework
-script(src='js/jquery.easing.min.js')
-    // jQuery Easing for smooth scrolling between anchors
-script(src='js/swiper.min.js')
-    // Swiper for image and text sliders
-script(src='js/jquery.magnific-popup.js')
-    // Magnific Popup for lightboxes
-script(src='js/validator.min.js')
-    // Validator.js - Bootstrap plugin that validates forms
-script(src='js/scripts.js')
+        li.nav-item
+          a.btn-outline-sm(href='logout') Log Out

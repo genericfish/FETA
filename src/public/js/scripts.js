@@ -1,17 +1,12 @@
-/* Template: Tivo - SaaS App HTML Landing Page Template
-   Author: Inovatik
-   Created: Sep 2019
-   Description: Custom JS file
-*/
-
-
 (function ($) {
     "use strict";
-
 
     /* Navbar Scripts */
     // jQuery to collapse the navbar on scroll
     $(window).on('scroll load', function () {
+        if ($(".navbar").offset() == undefined)
+            return
+
         if ($(".navbar").offset().top > 60) {
             $(".fixed-top").addClass("top-nav-collapse");
         } else {
@@ -38,7 +33,7 @@
 
 
     /* Image Slider - Swiper */
-    var imageSlider = new Swiper('.image-slider', {
+    var slider = new Swiper('.slider', {
         autoplay: {
             delay: 2000,
             disableOnInteraction: false
@@ -71,24 +66,10 @@
         }
     });
 
-
-    /* Text Slider - Swiper */
-    var textSlider = new Swiper('.text-slider', {
-        autoplay: {
-            delay: 6000,
-            disableOnInteraction: false
-        },
-        loop: true,
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev'
-        }
-    });
-
     /* Back To Top Button */
     // create the back to top button
     $('body').prepend('<a href="body" class="back-to-top page-scroll">Back to Top</a>');
-    var amountScrolled = 700;
+    var amountScrolled = 400;
     $(window).scroll(function () {
         if ($(window).scrollTop() > amountScrolled) {
             $('a.back-to-top').fadeIn('500');
