@@ -1,0 +1,23 @@
+button.btn-fancy(type="button" data-bs-toggle="modal" data-bs-target="#addNMTTransactionModal") Add a NMT Transaction
+
+.modal.fade#addNMTTransactionModal(tabindex="-1" aria-labelledby="addNMTTransactionModalLabel" aria-hidden="true")
+    .modal-dialog.modal-dialog-centered
+        .modal-content
+            .modal-header
+                h5.modal-title#addNMTTransactionModalLabel Add a NMT Transaction
+                button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+            .modal-body
+                form.add-NMTtransaction-form(action="/transaction/addNMT" method="post")
+                    //- .mb-3
+                    //-     select.form-select(name="type")
+                    //-         option(value="income" selected="selected") Income
+                    //-         option(value="expense") Expense
+                    .mb-3
+                        input.form-control(type="text" name="item" placeholder="item")
+                    .mb-3
+                        input.form-control(type="text" name="amount" placeholder="amount")
+                    .mb-3
+                        input.form-control(type="date" name="date" placeholder="yyyy-mm-dd")
+                    .mb-3
+                        input.form-control(type="text" name="note" placeholder="note")
+                    input.btn-fancy(type="submit" value="Add NMT Transaction")
