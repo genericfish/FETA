@@ -4,6 +4,80 @@ block content
   include templates/nav.pug
   .settings-page 
     h1 Settings
+    .summary
+      .row.justify-content-center.spacer
+        .col-10
+          h3 Appearance
+          .row.justify-content-center.spacer
+            .col-6
+              .color-option#light-mode
+                .box
+                p Light Mode
+            .col-6
+              .color-option#dark-mode
+                .box
+                p Dark Mode
 
-    .row
-        .col
+      .row.justify-content-center.spacer
+        .col-10
+          h3 Profile
+          .spacer
+            form(method="post" action="/settings/name")
+              .mb-3.row
+                .col-3
+                  label.col-form-label(for="firstname") First Name
+                .col-9
+                  input.form-control#firstname(type="text" name="firstname" value=name)
+              .mb-3.row
+                .col-3
+                  label.col-form-label(for="lastname") Last Name
+                .col-9
+                  input.form-control#lastname(type="text" name="lastname" value=lastname)
+              input.btn-fancy(type="submit" value="Update Profile")
+      .row.justify-content-center.spacer
+        .col-10
+          h3 Password
+          .spacer
+            form(method="post" action="/settings/password")
+              .mb-3.row
+                .col-3
+                  label.col-form-label(for="current") Current Password
+                .col-9
+                  input.form-control#current(type="password" name="current" value="")
+              .mb-3.row
+                .col-3
+                  label.col-form-label(for="password") New Password
+                .col-9
+                  input.form-control#password(type="password" name="password" value="")
+              .mb-3.row
+                .col-3
+                  label.col-form-label(for="confirm") Confirm New Password
+                .col-9
+                  input.form-control#confirm(type="password" name="confirm" value="")
+              input.btn-fancy(type="submit" value="Change Password")
+  script.
+    const darkBox = document.getElementById("dark-mode")
+    const lightBox = document.getElementById("light-mode")
+
+    darkBox.addEventListener("click", _ => {
+      localStorage.setItem('darkMode', 'enabled')
+      document.body.classList.add('dark-mode')
+      darkBox.classList.add('active')
+      lightBox.classList.remove('active')
+    })
+
+    lightBox.addEventListener("click", _ => {
+      localStorage.setItem('darkMode', 'disabled')
+      document.body.classList.remove('dark-mode')
+      lightBox.classList.add('active')
+      darkBox.classList.remove('active')
+    })
+
+    if (localStorage.getItem('darkMode') == 'enabled') {
+      document.body.classList.add('dark-mode')
+      darkBox.classList.add('active')
+    } else {
+      document.body.classList.remove('dark-mode')
+      lightBox.classList.add('active')
+    }
+
