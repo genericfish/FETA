@@ -18,11 +18,16 @@ module.exports = view => {
             let userData = await user.reference.get()
             const { firstname, lastname } = userData.data()
 
-            res.send(view({
+            const render = view({
                 header: "Settings",
                 name: firstname,
-                lastname: lastname
-            }))
+                lastname: lastname,
+                error: req.session.error
+            })
+
+            delete req.session.error
+
+            res.send(render)
         })
         .post("/name", async (req, res) => {
             if (!isLoggedIn(req))
@@ -33,8 +38,17 @@ module.exports = view => {
             if (anyEmpty(firstname, lastname))
                 return flash(req, res, "/settings", "You must fill out all fields.")
 
+            const email = req.session.email
 
-            console.log(req.body)
+            await Database.gDatabase.collection("users").doc(email).set(
+                {
+                    firstname: firstname,
+                    lastname: lastname,
+                },
+                { merge: true }
+            )
+
+            return res.redirect("/settings")
         })
         .post("/password", async (req, res) => {
             if (!isLoggedIn(req))

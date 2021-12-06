@@ -5,6 +5,8 @@ block content
   .settings-page 
     h1 Settings
     .summary
+      if error
+        p.error=error
       .row.justify-content-center.spacer
         .col-10
           h3 Appearance

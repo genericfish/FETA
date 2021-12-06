@@ -365,8 +365,16 @@ table.table {
 
 p.error {
   padding: .5rem;
-  border: 1px solid red;
-  color: red;
+  border-radius: 3px;
+  border: 1px solid #f74242;
+  color: white;
+
+  background: rgba(247, 66, 66, 0.35);
+}
+
+.login-page p.error {
+  color: #f74242;
+  background: rgba(255, 255, 255, .5);
 }
 
 .table .group button {
