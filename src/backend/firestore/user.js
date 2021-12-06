@@ -79,6 +79,7 @@ class User {
     // Modifies income transaction in a given category and gives it new data
     async modifyIncome(category, transactionID, newData) {
         const transaction = await this.income.collection(category).doc(transactionID).get()
+
         if (transaction.exists) {
             let change = newData.amount = new Money(newData.amount).Undisplay
 
@@ -194,16 +195,16 @@ class User {
     // Recursively deletes the specified document reference
     async deleteDocument(docRef) {
         let subcollections = await docRef.listCollections()
-        if (subcollections == undefined) {
-            for (let i = 0; i < subcollections.length; i++) {
-                process.nextTick(_ => {
-                    this.deleteCollection(subcollections[i])
-                })
-            }
-        }
 
-        docRef.delete()
+        if (subcollections === undefined)
+            return
+
+        for (let i = 0; i < subcollections.length; i++)
+            await this.deleteCollection(subcollections[i])
+
+        await docRef.delete()
     }
+
     // Recursively deletes the specified collection reference
     async deleteCollection(collRef) {
         let documents = await collRef.get()
@@ -213,17 +214,18 @@ class User {
             return
 
         for (let i = 0; i < documents.length; i++) {
-            this.deleteDocument(documents[i])
+            const docRef = await Database.gDatabase.doc(documents[i].ref.path)
+            await this.deleteDocument(docRef)
         }
     }
 
     // Removes goal in a given category and gives it new data
     async removeGoal(category, name) {
-        if (category == "savings") {
-            this.deleteDocument(this.savings.doc(name))
-        }
-        else if (category == "amortizations") {
-            this.deleteDocument(this.amortizations.doc(name))
+        switch (category.toLowerCase()) {
+            case "savings":
+                await this.deleteDocument(this.savings.doc(name))
+            case "amortizations":
+                await this.deleteDocument(this.amortizations.doc(name))
         }
     }
 
@@ -247,7 +249,7 @@ class User {
             amount: amount,
             note: note
         }
-        this.savings.doc(goal).collection("changes").doc().set(data, { merge: true })
+        await this.savings.doc(goal).collection("changes").doc().set(data, { merge: true })
         this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(amount) })
     }
 
@@ -258,23 +260,22 @@ class User {
             amount: amount,
             note: note
         }
-        this.amortizations.doc(goal).collection("changes").doc().set(data, { merge: true })
+        await this.amortizations.doc(goal).collection("changes").doc().set(data, { merge: true })
         this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(amount) })
     }
 
     // Modifies a savings transaction which contributes to a goal.
     // NOT INTENDED TO MODIFY TRANSACTION AMOUNT, MAY CAUSE UNEXPECTED PROBLEMS
     async modifySavingsTransaction(goal, transactionID, newData) {
-        this.savings.doc(goal).collection("changes").doc(transactionID).set(newData, { merge: true })
         let transaction = await this.savings.doc(goal).collection("changes").doc(transactionID).get()
         let change = newData.amount
-        if (transaction.exists) {
-            if (change != undefined) {
-                change -= transaction.data().amount
-                this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
-            }
+
+        if (transaction.exists && change != undefined) {
+            change -= transaction.data().amount
+            this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
         }
-        this.savings.doc(goal).collection("changes").doc(transactionID).set(newData, { merge: true })
+
+        await this.savings.doc(goal).collection("changes").doc(transactionID).set(newData, { merge: true })
     }
 
     // Modifies an amortizations transaction which contributes to a goal.
@@ -282,29 +283,33 @@ class User {
     async modifyAmortizationsTransaction(goal, transactionID, newData) {
         let transaction = await this.amortizations.doc(goal).collection("changes").doc(transactionID).get()
         let change = newData.amount
+
         if (transaction.exists) {
             if (change != undefined) {
                 change -= transaction.data().amount
                 this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(change) })
             }
         }
-        this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData, { merge: true })
+
+        await this.amortizations.doc(goal).collection("changes").doc(transactionID).set(newData, { merge: true })
     }
 
     // Removes a savings transaction which contributes to a goal
     async removeSavingsTransaction(goal, transactionID) {
         let doc = await this.savings.doc(goal).collection("changes").doc(transactionID).get()
         let change = doc.data().amount
-        this.savings.doc(goal).collection("changes").doc(transactionID).delete()
-        this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(-change) })
+
+        await this.savings.doc(goal).collection("changes").doc(transactionID).delete()
+        await this.savings.doc(goal).update({ "current": firestore.FieldValue.increment(-change) })
     }
 
     // Removes an amortizations transaction which contributes to a goal
     async removeAmortizationsTransaction(goal, transactionID) {
         let doc = await this.amortizations.doc(goal).collection("changes").doc(transactionID).get()
         let change = doc.data().amount
-        this.amortizations.doc(goal).collection("changes").doc(transactionID).delete()
-        this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(-change) })
+
+        await this.amortizations.doc(goal).collection("changes").doc(transactionID).delete()
+        await this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(-change) })
     }
 
     async getSavingsTransactions(goal) {
@@ -323,17 +328,18 @@ class User {
             current: 0,
             note: note
         }
-        this.nmt.doc(name).set(data, { merge: true })
+
+        await this.nmt.doc(name).set(data, { merge: true })
     }
 
     // Modifies an NMT item
     async modifyNMT(name, newData) {
-        this.nmt.doc(name).set(newData, { merge: true })
+        await this.nmt.doc(name).set(newData, { merge: true })
     }
 
     // Deletes an NFT item recursively
     async deleteNMT(name) {
-        this.deleteDocument(this.nmt.doc(name))
+        await this.deleteDocument(this.nmt.doc(name))
     }
 
     async getNMTItems() {
@@ -348,8 +354,9 @@ class User {
             date: date,
             note: note
         }
-        this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(amount) })
-        this.nmt.doc(nmt).collection("changes").doc().set(data, { merge: true })
+
+        await this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(amount) })
+        await this.nmt.doc(nmt).collection("changes").doc().set(data, { merge: true })
     }
 
     // Modifies a transaction for a specified NMT
@@ -370,8 +377,9 @@ class User {
     async removeNMTTransaction(nmt, transactionID) {
         let doc = await this.nmt.doc(nmt).collection("changes").doc(transactionID).get()
         let change = doc.data().amount
-        this.nmt.doc(nmt).collection("changes").doc(transactionID).delete()
-        this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(-change) })
+
+        await this.nmt.doc(nmt).collection("changes").doc(transactionID).delete()
+        await this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(-change) })
     }
 
     async getNMTTransactions(item) {
