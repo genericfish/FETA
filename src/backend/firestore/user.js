@@ -194,19 +194,22 @@ class User {
     // Recursively deletes the specified document reference
     async deleteDocument(docRef) {
         let subcollections = await docRef.listCollections()
-        for (let i = 0; i < subcollections.length; i++) {
-            process.nextTick(() => {
-                deleteCollection(subcollections[i])
-            })
+        if(subcollections == undefined){
+            for (let i = 0; i < subcollections.length; i++) {
+                process.nextTick(() => {
+                    deleteCollection(subcollections[i])
+                })
+            }
         }
         docRef.delete()
     }
-
     // Recursively deletes the specified collection reference
     async deleteCollection(collRef) {
         let documents = await collRef.get().docs
-        for (let i = 0; i < documents.length; i++) {
-            this.deleteDocument(documents[i])
+        if(documents != undefined){
+            for (let i = 0; i < documents.length; i++) {
+                this.deleteDocument(documents[i])
+            }
         }
     }
 

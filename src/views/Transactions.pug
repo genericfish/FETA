@@ -58,7 +58,7 @@ block content
               th Note
             each item, idx in items 
               tr 
-                each field in item 
+                each field, index in item 
                   td=field 
                 td.group
                   button.btn.btn-primary(type="button" data-bs-toggle="modal" data-bs-target=`#addNMTModal${idx}`)
@@ -186,7 +186,7 @@ block content
               .modal-body
                 p Are you sure you want to delete this NMT item?
                 form(class="remove-item-form" action="/transactions/removeItem" method="post")
-                  input(type="hidden" name="name" value=items[0])
+                  input(type="hidden" name="name" value=item[0])
                   input.btn-fancy(type="submit" value="Confirm")
 
       each NMT,idx in NMTs
