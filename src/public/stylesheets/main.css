@@ -78,7 +78,8 @@ body {
 .transaction-page,
 .dashboard-page,
 .statistics-page,
-.goal-page {
+.goal-page,
+.settings-page {
   margin-top: 10em;
   width: 100%;
   max-width: 996px;
@@ -374,4 +375,46 @@ p.error {
 
 .table td.group {
   text-align: right;
+}
+
+.settings-page .box {
+  display: block;
+  border: 1px solid #fff;
+  height: 0;
+  width: 100%;
+  padding-bottom: 100%;
+  border-radius: 10px;
+}
+
+.settings-page form label {
+  color: white;
+}
+
+#light-mode .box {
+  background: linear-gradient(29deg, #A9FBD7,#307351);
+}
+
+#dark-mode .box {
+  background: linear-gradient(87deg, #047c40, #000302);
+}
+
+.color-option {
+  border: 2px solid white;
+  margin: 0 .25rem;
+  padding: 1rem;
+  cursor: pointer;
+
+  border-radius: 6px;
+}
+
+.color-option.active {
+  background: rgba(255,255,255,.25);
+}
+
+.color-option.active p {
+  color: black;
+}
+
+.dark-mode .color-option.active p  {
+  color: white;
 }
