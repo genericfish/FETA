@@ -92,49 +92,50 @@ block content
                     i.bi.bi-trash-fill
             else 
               tr No NMTs
-            
-      each transaction, idx in transactions
-        .modal.fade(id=`deleteModal${idx}` tabindex="-1" aria-labelledby=`deleteModalLabel${idx}` aria-hidden="true")
-          .modal-dialog.modal-dialog-centered
-            .modal-content
-              .modal-header
-                h5(class="modal-title" id="deleteModalLabel") Remove Transaction
-                button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
-              .modal-body
-                p Are you sure you want to delete this transaction?
-                form.remove-transaction-form(action="/transactions/remove" method="post")
-                  input(type="hidden" name="ID" value=transaction[0])
-                  input(type="hidden" name="type" value=transaction[1])
-                  input(type="hidden" name="category" value=transaction[5])
-                  input.btn-fancy(type="submit" value="Confirm")
-        .modal.fade(id=`editModal${idx}` tabindex="-1" aria-labelledby=`editModalLabel${idx}` aria-hidden="true")
-          .modal-dialog.modal-dialog-centered
-            .modal-content
-              .modal-header
-                h5(class="modal-title" id="editModalLabel") Edit Transaction
-                button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
-              .modal-body
-                form.edit-transaction-form(action="/transactions/edit" method="post")
-                  input.form-control(type="hidden" name="ID" value=transaction[0])
-                  input.form-control(type="hidden" name="type" value=transaction[1])
-                  input.form-control(type="hidden" name="category" value=transaction[5])
-                  .mb-3.row
-                    .col-3
-                      label.col-form-label(for=`amount-${idx}`) Amount
-                    .col-9
-                      input.form-control(type="text" id=`amount-${idx}` name="amount" value=transaction[2])
-                  .mb-3.row
-                    .col-3
-                      label.col-form-label(for=`date-${idx}`) Date
-                    .col-9
-                      input.form-control(type="date" id=`date-${idx}` name="date" value=transaction[7])
-                  .mb-3.row
-                    .col-3
-                      label.col-form-label(for=`note-${idx}`) Note
-                    .col-9
-                      input.form-control(type="text" id=`note-${idx}` name="note" value=transaction[4])
-                  input.btn-fancy(type="submit" value="Edit")
-      
+
+    each transaction, idx in transactions
+      .modal.fade(id=`deleteModal${idx}` tabindex="-1" aria-labelledby=`deleteModalLabel${idx}` aria-hidden="true")
+        .modal-dialog.modal-dialog-centered
+          .modal-content
+            .modal-header
+              h5(class="modal-title" id="deleteModalLabel") Remove Transaction
+              button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+            .modal-body
+              p Are you sure you want to delete this transaction?
+              form.remove-transaction-form(action="/transactions/remove" method="post")
+                input(type="hidden" name="ID" value=transaction[0])
+                input(type="hidden" name="type" value=transaction[1])
+                input(type="hidden" name="category" value=transaction[5])
+                input.btn-fancy(type="submit" value="Confirm")
+      .modal.fade(id=`editModal${idx}` tabindex="-1" aria-labelledby=`editModalLabel${idx}` aria-hidden="true")
+        .modal-dialog.modal-dialog-centered
+          .modal-content
+            .modal-header
+              h5(class="modal-title" id="editModalLabel") Edit Transaction
+              button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+            .modal-body
+              form.edit-transaction-form(action="/transactions/edit" method="post")
+                input.form-control(type="hidden" name="ID" value=transaction[0])
+                input.form-control(type="hidden" name="type" value=transaction[1])
+                input.form-control(type="hidden" name="category" value=transaction[5])
+                .mb-3.row
+                  .col-3
+                    label.col-form-label(for=`amount-${idx}`) Amount
+                  .col-9
+                    input.form-control(type="text" id=`amount-${idx}` name="amount" value=transaction[2])
+                .mb-3.row
+                  .col-3
+                    label.col-form-label(for=`date-${idx}`) Date
+                  .col-9
+                    input.form-control(type="date" id=`date-${idx}` name="date" value=transaction[7])
+                .mb-3.row
+                  .col-3
+                    label.col-form-label(for=`note-${idx}`) Note
+                  .col-9
+                    input.form-control(type="text" id=`note-${idx}` name="note" value=transaction[4])
+                input.btn-fancy(type="submit" value="Edit")
+
+    if items.length > 0
       each item, idx in items
         .modal.fade(id=`addNMTModal${idx}` tabindex="-1" aria-labelledby=`addNMTModalLabel${idx}` aria-hidden="true")
           .modal-dialog.modal-dialog-centered
