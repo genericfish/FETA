@@ -41,13 +41,14 @@ function getLastMonth() {
     return begin
 }
 
-async function isLoggedIn(req) {
-    const sessionID = req.sessionID
-
-    if (sessionID == undefined || sessionID == null)
+function isLoggedIn(req) {
+    if (!req.hasOwnProperty("sessionID"))
         return false
 
-    if (req.session == undefined || req.session == null)
+    if (!req.hasOwnProperty("session"))
+        return false
+
+    if (!req.session.hasOwnProperty("loggedIn"))
         return false
 
     return req.session.loggedIn === true
