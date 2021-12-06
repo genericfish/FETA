@@ -89,6 +89,7 @@ block content
             .col
               h3="Expense"  
 
+              script(type='text/javascript' src='https://www.gstatic.com/charts/loader.js')
               script(type='text/javascript').
                 google.charts.load("current", {packages:["corechart"]});
                 google.charts.setOnLoadCallback(drawExpenseChart);
@@ -112,6 +113,3 @@ block content
                   chart.draw(data, options);
                 }
               #expensechart(style='width: 100%; height: 400px;')
-
-        
-
