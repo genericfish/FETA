@@ -194,22 +194,26 @@ class User {
     // Recursively deletes the specified document reference
     async deleteDocument(docRef) {
         let subcollections = await docRef.listCollections()
-        if(subcollections == undefined){
+        if (subcollections == undefined) {
             for (let i = 0; i < subcollections.length; i++) {
-                process.nextTick(() => {
-                    deleteCollection(subcollections[i])
+                process.nextTick(_ => {
+                    this.deleteCollection(subcollections[i])
                 })
             }
         }
+
         docRef.delete()
     }
     // Recursively deletes the specified collection reference
     async deleteCollection(collRef) {
-        let documents = await collRef.get().docs
-        if(documents != undefined){
-            for (let i = 0; i < documents.length; i++) {
-                this.deleteDocument(documents[i])
-            }
+        let documents = await collRef.get()
+        documents = documents.docs
+
+        if (documents === undefined)
+            return
+
+        for (let i = 0; i < documents.length; i++) {
+            this.deleteDocument(documents[i])
         }
     }
 
@@ -303,12 +307,12 @@ class User {
         this.amortizations.doc(goal).update({ "current": firestore.FieldValue.increment(-change) })
     }
 
-    async getSavingsTransactions(goal){
+    async getSavingsTransactions(goal) {
         let collection = await this.goals.collection("savings").doc(goal).collection("changes").get()
         return collection.docs
     }
 
-    async getAmortizationsTransactions(goal){
+    async getAmortizationsTransactions(goal) {
         let collection = await this.goals.collection("amortizations").doc(goal).collection("changes").get()
         return collection.docs
     }
@@ -370,7 +374,7 @@ class User {
         this.nmt.doc(nmt).update({ "current": firestore.FieldValue.increment(-change) })
     }
 
-    async getNMTTransactions(item){
+    async getNMTTransactions(item) {
         const changes = await this.nmt.doc(item).collection("changes").get()
         return changes.docs
     }
